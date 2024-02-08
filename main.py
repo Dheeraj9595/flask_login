@@ -56,5 +56,20 @@ def login_user():
     else:
         return jsonify({"error": "Invalid username or password"}), 401
 
+def user_serializer(user):
+    return {"username": user.username, "email": user.email, "username": user.username}
+
+@app.route('/update-user/<user_id>/', methods=['GET'])
+def show_user_by_id(user_id):
+    users = db.query(User).filter(User.id == user_id).first()
+    serializer = [user_serializer(users)]
+    return serializer
+
+# Render todo form
+@app.route('/todo/', methods=['GET'])
+def render_todo():
+    return render_template('todo.html')
+
+
 if __name__ == "__main__":
     app.run(debug=True)
