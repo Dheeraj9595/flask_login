@@ -57,18 +57,31 @@ def login_user():
         return jsonify({"error": "Invalid username or password"}), 401
 
 def user_serializer(user):
-    return {"username": user.username, "email": user.email, "username": user.username}
+    return {"username": user.username, "email": user.email, "name": user.first_name + user.last_name}
 
-@app.route('/update-user/<user_id>/', methods=['GET'])
+@app.route('/show-user/<user_id>/', methods=['GET'])
 def show_user_by_id(user_id):
     users = db.query(User).filter(User.id == user_id).first()
     serializer = [user_serializer(users)]
     return serializer
 
+@app.route('/update-user/<user_id>/', methods=['PATCH'])
+def update_user(user_id:int):
+    update_user_data = request.json
+    user = db.query(User).filter(User.id == user_id).first()
+    if user:
+        for key,value in update_user_data.items():
+            setattr(user, key, value)
+        db.commit()
+        return jsonify({"message": f"User with ID {user_id} updated successfully"})
+    else:
+        return jsonify({"message": f"User with ID {user_id} not found"})    
+
+
 # Render todo form
 @app.route('/todo/', methods=['GET'])
 def render_todo():
-    return render_template('todo.html')
+    return render_template('index.html')
 
 
 if __name__ == "__main__":
