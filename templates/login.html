@@ -2,7 +2,7 @@
 <html lang="en">
 <h2>Login</h2>
 <div class="form-container">
-        <form id="loginForm" action="/login/" method="POST">
+    <form id="loginForm" action="{{ url_for('login_user') }}" method="POST">
             <div class="form-group">
                 <label for="loginUsername">Username:</label>
                 <input type="text" id="loginUsername" name="username" required>

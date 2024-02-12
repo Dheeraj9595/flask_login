@@ -4,12 +4,25 @@ from db import SessionLocal, User
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from pydantic import BaseModel
+# from users import users_bp
+
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 db: Session = SessionLocal()
 
 # Your existing routes go here...
+
+
+# Render todo form
+@app.route('/todo/', methods=['GET'])
+def render_todo():
+    return render_template('index.html')
+
+
+###users apis 
+
+
 
 # Render registration form
 @app.route('/register/', methods=['GET'])
@@ -21,14 +34,45 @@ def render_register():
 def render_login():
     return render_template('login.html')
 
-# Handle registration form submission
+# # Handle registration form submission
+# @users_bp.route('/register/', methods=['POST'])
+# def register_user():
+#     username = request.form.get('username')
+#     password = request.form.get('password')
+#     first_name = request.form.get('first_name')
+#     last_name = request.form.get('last_name')
+#     email = request.form.get('email')
+
+#     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+#     try:
+#         new_user = User(username=username, password=hashed_password, first_name=first_name, last_name=last_name, email=email)
+#         db.add(new_user)
+#         db.commit()
+#         return jsonify({"message": "User registered successfully"})
+#     except IntegrityError:
+#         db.rollback()
+#         return jsonify({"error": "Username already exists"}), 400
+#     finally:
+#         db.close()
+
 @app.route('/register/', methods=['POST'])
 def register_user():
-    username = request.form.get('username')
-    password = request.form.get('password')
-    first_name = request.form.get('first_name')
-    last_name = request.form.get('last_name')
-    email = request.form.get('email')
+    if request.is_json:
+        # Handling JSON data
+        user_data = request.json
+        username = user_data.get('username')
+        password = user_data.get('password')
+        first_name = user_data.get('first_name')
+        last_name = user_data.get('last_name')
+        email = user_data.get('email')
+    else:
+        # Handling form data
+        username = request.form.get('username')
+        password = request.form.get('password')
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        email = request.form.get('email')
 
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
@@ -36,12 +80,15 @@ def register_user():
         new_user = User(username=username, password=hashed_password, first_name=first_name, last_name=last_name, email=email)
         db.add(new_user)
         db.commit()
-        return jsonify({"message": "User registered successfully"})
+        return jsonify({"message": "User registered successfully"}), 200, {'Content-Type': 'application/json'}
     except IntegrityError:
         db.rollback()
         return jsonify({"error": "Username already exists"}), 400
     finally:
         db.close()
+
+
+
 
 # Handle login form submission
 @app.route('/login/', methods=['POST'])
@@ -78,11 +125,13 @@ def update_user(user_id:int):
         return jsonify({"message": f"User with ID {user_id} not found"})    
 
 
-# Render todo form
-@app.route('/todo/', methods=['GET'])
-def render_todo():
-    return render_template('index.html')
 
+
+
+
+
+
+# app.register_blueprint(users_bp, url_prefix='/api/users')
 
 if __name__ == "__main__":
     app.run(debug=True)
