@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from pydantic import BaseModel
 from db import create
+from todos import bp
 
 # from users import users_bp
 
@@ -169,12 +170,12 @@ def search_users():
         # Serialize the result
         serialized_users = [serialize_user(user) for user in users]
 
-        return jsonify({"users": serialized_users})
+        return jsonify({"status": 200, "results": len(serialized_users), "users": serialized_users}), 200
     else:
         return jsonify({"error": "Missing 'q' parameter"}), 400
 
 
-
+app.register_blueprint(bp, url_prefix='/todos')
 
 if __name__ == "__main__":
     app.run(debug=True)

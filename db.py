@@ -2,7 +2,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime, \
     func, Boolean
 import datetime
-from flask import  jsonify
+from flask import jsonify
 from sqlalchemy.exc import IntegrityError
 
 DATABASE_URL = "mysql+mysqlconnector://admin:Root*1234@localhost:3306/flask_login"
@@ -55,7 +55,7 @@ def create(database, item):
         database.add(item)
         database.commit()
         database.refresh(item)
-        return jsonify({"message": "Item created successfully"})
+        return jsonify({"message": f"{item} created successfully"})
     except IntegrityError:
         database.rollback()
         return jsonify({"error": "IntegrityError - Duplicate entry"}), 400
