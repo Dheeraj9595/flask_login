@@ -1,8 +1,9 @@
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime, \
-      func, Boolean
+    func, Boolean
 import datetime
-
+from flask import  jsonify
+from sqlalchemy.exc import IntegrityError
 
 DATABASE_URL = "mysql+mysqlconnector://admin:Root*1234@localhost:3306/flask_login"
 
@@ -16,9 +17,10 @@ db = SessionLocal()
 
 
 class AbstractModel(Base):
-    __abstract__= True
+    __abstract__ = True
     id = Column(Integer, primary_key=True)
     created_date = Column(DateTime, default=func.now(), server_default=func.now())
+
 
 class User(AbstractModel):
     __tablename__ = "user"
@@ -44,12 +46,21 @@ class Todo(AbstractModel):
     # Define a relationship with the User model (assuming you have a User model)
     user = relationship("User", back_populates="todos")
 
+
 # Create database tables
 # Base.metadata.create_all(bind=engine)
 
-def create(database: db, item):
-    database.add(item)
-    database.commit()
-    database.refresh(item)
-    return item
-
+def create(database, item):
+    try:
+        database.add(item)
+        database.commit()
+        database.refresh(item)
+        return jsonify({"message": "Item created successfully"})
+    except IntegrityError:
+        database.rollback()
+        return jsonify({"error": "IntegrityError - Duplicate entry"}), 400
+    except Exception as e:
+        database.rollback()
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+    finally:
+        database.close()
