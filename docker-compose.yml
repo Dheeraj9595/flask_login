@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  flask-app:
+    image: python:3.8-slim
+    container_name: flask-app
+    working_dir: /app
+    volumes:
+      - ./app:/app
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=your_flask_app.py
+      - FLASK_RUN_HOST=0.0.0.0
+      - DATABASE_URL=mysql+mysqlconnector://admin:Root*1234@mysql:3306/flask_login
+    command: >
+      sh -c "pip install -r requirements.txt && flask run"
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql-db
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: Root*1234
+      MYSQL_DATABASE: flask_login
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: Root*1234
