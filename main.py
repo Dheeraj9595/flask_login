@@ -1,22 +1,45 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 from flask_bcrypt import Bcrypt  # Make sure to install flask-bcrypt
 from db import SessionLocal, User
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from pydantic import BaseModel
 from db import create
+from serializers import get_all_serializer, serialize_user
 from todos import bp
-
-# from users import users_bp
+from users import users_bp
+from flask_login import UserMixin, LoginManager, login_user, logout_user, current_user, login_required
 
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 db = SessionLocal()
 
+# Setup Flask-Login
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'  # Redirects to login page
 
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.query(User).get(int(user_id))
+
+# Custom ModelView that requires login
+class SecureModelView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('render_login', next=request.url))
+
+
+# Initialize Flask-Admin
+admin = Admin(app, name='My Admin Panel', template_mode='bootstrap3')
 # Your existing routes go here...
 
+admin.add_view(ModelView(User, db))
 
 # Render todo form
 @app.route('/todo/', methods=['GET'])
@@ -79,39 +102,11 @@ def login_user():
 
     user = db.query(User).filter_by(username=username).first()
 
-    if user and bcrypt.check_password_hash(user.password, password):
+    if user and user.password_is_valid(password):
         return jsonify({"message": "Login successful"})
     else:
         return jsonify({"error": "Invalid username or password"}), 401
 
-
-def user_serializer(user):
-    return {"username": user.username, "email": user.email, "name": user.first_name + user.last_name}
-
-
-def get_all_serializer(user):
-    return {"id": user.id,
-            "username": user.username,
-            "first name": user.first_name,
-            "last name": user.last_name}
-
-
-def serialize_user(user):
-    return {"id": user.id, "username": user.username, "email": user.email}
-
-
-@app.route('/show-user/', defaults={'user_id': None}, methods=['GET'])
-@app.route('/show-user/<int:user_id>/', methods=['GET'])
-def show_user_by_id(user_id: int):
-    if user_id:
-        user = db.query(User).get(user_id)
-        if user:
-            return jsonify(user_serializer(user))
-        return jsonify({"message": "User not found"}), 404
-
-    users = db.query(User).all()
-    serialized_users = [user_serializer(user) for user in users]
-    return jsonify({"users": serialized_users})
 
 
 @app.route('/details/', methods=['GET'])
@@ -176,6 +171,7 @@ def search_users():
 
 
 app.register_blueprint(bp, url_prefix='/todos')
+app.register_blueprint(users_bp)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

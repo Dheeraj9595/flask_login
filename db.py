@@ -1,3 +1,4 @@
+from flask_bcrypt import Bcrypt
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime, \
     func, Boolean
@@ -5,7 +6,8 @@ import datetime
 from flask import jsonify
 from sqlalchemy.exc import IntegrityError
 
-DATABASE_URL = "mysql+mysqlconnector://admin:Root*1234@localhost:3306/flask_login"
+DATABASE_URL = "sqlite:///flasklogin.sqlite"
+
 
 engine = create_engine(DATABASE_URL)
 
@@ -14,7 +16,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 db = SessionLocal()
-
+bcrypt= Bcrypt()
 
 class AbstractModel(Base):
     __abstract__ = True
@@ -34,6 +36,8 @@ class User(AbstractModel):
     def __repr__(self):
         return '<User %r' % self.username
 
+    def password_is_valid(self, password):
+        return bcrypt.check_password_hash(self.password, password)
 
 class Todo(AbstractModel):
     __tablename__ = "todos"
@@ -48,7 +52,7 @@ class Todo(AbstractModel):
 
 
 # Create database tables
-# Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 def create(database, item):
     try:

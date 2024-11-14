@@ -63,12 +63,15 @@ def register_user():
 # Handle login form submission
 @users_bp.route('/login/', methods=['POST'])
 def login_user():
-    username = request.form.get('username')
-    password = request.form.get('password')
+    # breakpoint()
+    data = request.get_json()
+
+    username = data.get('username')
+    password = data.get('password')
 
     user = db.query(User).filter_by(username=username).first()
 
-    if user and bcrypt.check_password_hash(user.password, password):
+    if user and user.password_is_valid(password):
         return jsonify({"message": "Login successful"})
     else:
         return jsonify({"error": "Invalid username or password"}), 401
@@ -82,6 +85,8 @@ def user_serializer(user):
 def show_user_by_id(user_id: None):
     if user_id:
         users = db.query(User).filter(User.id == user_id).first()
+        if users is None:
+            return jsonify({"message": f"No User is found with {user_id} this id"})
         serializer = [user_serializer(users)]
     else:
         all_users = db.query(User).all()
