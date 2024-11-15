@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from pydantic import BaseModel
 from db import create
-from serializers import get_all_serializer, serialize_user
+from serializers import get_all_serializer, serialize_user, RegisterUserSerializer
 from todos import bp
 from users import users_bp
 from flask_login import UserMixin, LoginManager, login_user, logout_user, current_user, login_required
@@ -55,6 +55,9 @@ def render_todo():
 def render_register():
     return render_template('register.html')
 
+@app.route('/home/', methods=['GET'])
+def render_home():
+    return render_template('home.html')
 
 # Render login form
 @app.route('/login/', methods=['GET'])
@@ -64,27 +67,27 @@ def render_login():
 
 @app.route('/register/', methods=['POST'])
 def register_user():
-    if request.is_json:
-        # Handling JSON data
-        user_data = request.json
-        username = user_data.get('username')
-        password = user_data.get('password')
-        first_name = user_data.get('firstname')
-        last_name = user_data.get('lastname')
-        email = user_data.get('email')
-    else:
-        # Handling form data
-        username = request.form.get('username')
-        password = request.form.get('password')
-        first_name = request.form.get('first_name')
-        last_name = request.form.get('last_name')
-        email = request.form.get('email')
-
-    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-
     try:
-        new_user = User(username=username, password=hashed_password, first_name=first_name, last_name=last_name,
-                        email=email)
+        if request.is_json:
+            user_data = request.get_json()
+        else:
+            user_data = request.form.to_dict()
+        validated_data = RegisterUserSerializer(**user_data)
+
+        username = validated_data.username
+        password = validated_data.password
+        email = validated_data.email
+        first_name = validated_data.first_name
+        last_name = validated_data.last_name
+
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+        new_user = User(username=username,
+                        password=hashed_password,
+                        first_name=first_name,
+                        last_name=last_name,
+                        email=email
+                        )
         create(db, new_user)
         return jsonify({"message": "User registered successfully"}), 200, {'Content-Type': 'application/json'}
     except IntegrityError:
@@ -103,7 +106,8 @@ def login_user():
     user = db.query(User).filter_by(username=username).first()
 
     if user and user.password_is_valid(password):
-        return jsonify({"message": "Login successful"})
+        return render_template('home.html')
+        # return jsonify({"message": "aLogin successful"})
     else:
         return jsonify({"error": "Invalid username or password"}), 401
 

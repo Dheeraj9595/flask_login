@@ -1,8 +1,10 @@
+from typing import Optional
+
 from flask import request, jsonify, Blueprint, render_template
 from db import User, SessionLocal, create
 from flask_bcrypt import bcrypt
 from sqlalchemy.exc import IntegrityError
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 db = SessionLocal()
 
@@ -13,8 +15,8 @@ users_bp = Blueprint('users', __name__, url_prefix='/api/users')
 class CreateUser(BaseModel):
     username: str
     password: str
-    firstname: str
-    lastname: str
+    firstname: Optional[str] = Field(default=None)
+    lastname: Optional[str] = Field(default=None)
     email: str
 
 
@@ -61,20 +63,20 @@ def register_user():
 
 
 # Handle login form submission
-@users_bp.route('/login/', methods=['POST'])
-def login_user():
-    # breakpoint()
-    data = request.get_json()
-
-    username = data.get('username')
-    password = data.get('password')
-
-    user = db.query(User).filter_by(username=username).first()
-
-    if user and user.password_is_valid(password):
-        return jsonify({"message": "Login successful"})
-    else:
-        return jsonify({"error": "Invalid username or password"}), 401
+# @users_bp.route('/login/', methods=['POST'])
+# def login_user():
+#     # breakpoint()
+#     data = request.get_json()
+#
+#     username = data.get('username')
+#     password = data.get('password')
+#
+#     user = db.query(User).filter_by(username=username).first()
+#
+#     if user and user.password_is_valid(password):
+#         return jsonify({"message": "Login successful"})
+#     else:
+#         return jsonify({"error": "Invalid username or password"}), 401
 
 
 def user_serializer(user):
