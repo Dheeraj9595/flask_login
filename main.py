@@ -1,7 +1,12 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from crypt import methods
+
+import openpyxl
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_bcrypt import Bcrypt  # Make sure to install flask-bcrypt
+from werkzeug.utils import secure_filename
+
 from db import SessionLocal, User
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
@@ -11,7 +16,7 @@ from serializers import get_all_serializer, serialize_user, RegisterUserSerializ
 from todos import bp
 from users import users_bp
 from flask_login import UserMixin, LoginManager, login_user, logout_user, current_user, login_required
-
+import pandas as pd
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -20,6 +25,8 @@ db = SessionLocal()
 # Setup Flask-Login
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'  # Redirects to login page
+app.config['SECRET_KEY'] = 'your_random_secret_key_here'
+app.config['UPLOAD_FOLDER'] = 'uploads/'
 
 
 @login_manager.user_loader
@@ -55,14 +62,14 @@ def render_todo():
 def render_register():
     return render_template('register.html')
 
-@app.route('/home/', methods=['GET'])
-def render_home():
-    return render_template('home.html')
+# @app.route('/home/', methods=['GET'])
+# def render_home():
+#     return render_template('home.html')
 
 # Render login form
 @app.route('/login/', methods=['GET'])
 def render_login():
-    return render_template('login.html')
+    return render_template('login_page.html')
 
 
 @app.route('/register/', methods=['POST'])
@@ -106,7 +113,7 @@ def login_user():
     user = db.query(User).filter_by(username=username).first()
 
     if user and user.password_is_valid(password):
-        return render_template('home.html')
+        return redirect(url_for('admin_users'))
         # return jsonify({"message": "aLogin successful"})
     else:
         return jsonify({"error": "Invalid username or password"}), 401
@@ -172,6 +179,187 @@ def search_users():
         return jsonify({"status": 200, "results": len(serialized_users), "users": serialized_users}), 200
     else:
         return jsonify({"error": "Missing 'q' parameter"}), 400
+
+
+
+@app.route('/upload/', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'GET':
+        return render_template('upload.html')
+
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+
+        file = request.files['file']
+
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+
+        if file and file.filename.endswith('.xlsx'):
+            filename = secure_filename(file.filename)
+            file_path = app.config['UPLOAD_FOLDER'] + filename
+            file.save(file_path)
+
+            #process the excel file using pandas
+            try:
+                df = pd.read_excel(file_path)
+                for _,row in df.iterrows():
+                    username = row.get('username')
+                    password = row.get('password')
+
+                    if username and password:
+                        #now hash the password
+                        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+                        #create a new user instance
+                        new_user = User(username=username, password=hashed_password)
+
+                        db.add(new_user)
+                        db.commit()
+                        db.save()
+                flash('Users uploaded and saved successfully')
+            except IntegrityError:
+                db.rollback()
+                flash("Error: some usres already exist or there was an issue with the data.")
+            except Exception as e:
+                flash(f"Error processing the file{str(e)}")
+            finally:
+                db.close()
+            return redirect(url_for('upload_file'))
+    return render_template('upload.html')
+
+@app.route('/view', methods=['POST'])
+def view():
+
+    file = request.files['file']
+    file.save(file.filename)
+    data = pd.read_excel(file)
+    return data.to_html()
+
+@app.route('/save', methods=["POST"])
+def save_users_from_file():
+    """Upload and save users from an Excel file using Pandas."""
+    # Check if a file is in the request
+    if 'file' not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+
+    file = request.files['file']
+
+    if not file.filename.endswith('.xlsx'):
+        return jsonify({"error": "Only .xlsx files are supported"}), 400
+
+    try:
+        # Read the Excel file into a Pandas DataFrame
+        df = pd.read_excel(file)
+
+        # Ensure required columns exist
+        required_columns = {'username', 'password'}
+        if not required_columns.issubset(df.columns):
+            return jsonify({"error": f"Missing required columns: {required_columns - set(df.columns)}"}), 400
+
+        errors = []  # To track duplicates or issues
+        users_to_add = []
+
+        # Loop through the DataFrame rows
+        for _, row in df.iterrows():
+            # breakpoint()
+            username = row['username']
+            password = row['password']
+            firstname = row['first_name']
+            lastname = row['last_name']
+            email = row['email']
+
+            if pd.isna(username) or pd.isna(password):  # Skip rows with missing data
+                continue
+
+            # Check for existing user in the database
+            existing_user = db.query(User).filter_by(username=username).first()
+
+            if existing_user:
+                errors.append(f"Duplicate username found: {username}")
+            else:
+                # Hash the password and prepare the User instance
+                hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+                user = User(username=username, password=hashed_password, last_name=lastname, first_name=firstname,email=email)
+                users_to_add.append(user)
+
+        # Add all new users to the database
+        if users_to_add:
+            db.add_all(users_to_add)
+            db.commit()
+
+        # Prepare the response
+        response = {"message": f"Successfully saved {len(users_to_add)} users."}
+        if errors:
+            response["errors"] = errors
+
+        return jsonify(response), 200
+
+    except IntegrityError as e:
+        db.rollback()
+        return jsonify({"error": "Database integrity error", "details": str(e)}), 500
+
+    except Exception as e:
+        db.rollback()
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
+    finally:
+        db.close()
+
+@app.route('/save_email', methods=['POST'])
+def update_email_from_excel():
+    file = request.files['file']
+    try:
+        # Step 1: Read the Excel file to get the emails
+        # Assuming the Excel file has a column "email" for new email addresses
+        df = pd.read_excel(file)
+
+        # Check if the email column exists
+        if 'email' not in df.columns:
+            return jsonify({"error": "The Excel file does not contain an 'email' column."}), 400
+
+        # Step 2: Query users whose email is NULL
+        users_to_update = db.query(User).filter(User.email == None).all()
+
+        # Check if there are users to update
+        if not users_to_update:
+            return jsonify({"message": "No users without an email."}), 404
+
+        # Step 3: Update users' email addresses
+        for i, user in enumerate(users_to_update):
+            if i < len(df):  # Ensure we don't go out of bounds if there are more users than emails
+                user.email = df.iloc[i]['email']  # Assign email from Excel to the user
+            else:
+                break  # Stop if we've run out of emails
+
+        # Step 4: Commit the changes to the database
+        db.commit()
+
+        # Return a success message
+        return jsonify({"message": f"Email updated for {len(users_to_update)} users."})
+
+    except Exception as e:
+        db.rollback()  # Rollback the transaction in case of error
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+    finally:
+        db.close()  # Close the session
+
+
+@app.route('/')
+# @login_required
+def admin_users():
+    return render_template('index.html')
+
+
+@app.route('/login_page')
+def login_page():
+    return render_template('login_page.html')
+
+
+
 
 
 app.register_blueprint(bp, url_prefix='/todos')

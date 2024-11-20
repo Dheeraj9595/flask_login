@@ -1,6 +1,6 @@
 from typing import Optional
 
-from flask import request, jsonify, Blueprint, render_template
+from flask import request, jsonify, Blueprint, render_template, url_for, redirect
 from db import User, SessionLocal, create
 from flask_bcrypt import bcrypt
 from sqlalchemy.exc import IntegrityError
@@ -63,20 +63,20 @@ def register_user():
 
 
 # Handle login form submission
-# @users_bp.route('/login/', methods=['POST'])
-# def login_user():
-#     # breakpoint()
-#     data = request.get_json()
-#
-#     username = data.get('username')
-#     password = data.get('password')
-#
-#     user = db.query(User).filter_by(username=username).first()
-#
-#     if user and user.password_is_valid(password):
-#         return jsonify({"message": "Login successful"})
-#     else:
-#         return jsonify({"error": "Invalid username or password"}), 401
+@users_bp.route('/login/', methods=['POST'])
+def login_user():
+    # breakpoint()
+    data = request.get_json()
+
+    username = data.get('username')
+    password = data.get('password')
+
+    user = db.query(User).filter_by(username=username).first()
+
+    if user and user.password_is_valid(password):
+        return redirect(url_for('admin_users'))
+    else:
+        return jsonify({"error": "Invalid username or password"}), 401
 
 
 def user_serializer(user):

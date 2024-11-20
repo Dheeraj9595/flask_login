@@ -29,7 +29,7 @@ class User(AbstractModel):
     first_name = Column(String(50), index=True)
     last_name = Column(String(50), index=True)
     username = Column(String(50), unique=True, index=True)
-    email = Column(String(100), unique=True, index=True)
+    email = Column(String(100), unique=False, index=True)
     password = Column(String(200), index=True)
     todos = relationship("Todo", back_populates="user")
 
@@ -49,6 +49,10 @@ class Todo(AbstractModel):
 
     # Define a relationship with the User model (assuming you have a User model)
     user = relationship("User", back_populates="todos")
+
+class Notifications(AbstractModel):
+    __tablename__ = "notifications"
+    content = Column(String(255), nullable=False)
 
 
 # Create database tables
