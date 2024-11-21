@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from db import create
 from serializers import get_all_serializer, serialize_user, RegisterUserSerializer
 from todos import bp
-from users import users_bp
+from users import users_bp, user_serializer
 from flask_login import UserMixin, LoginManager, login_user, logout_user, current_user, login_required
 import pandas as pd
 
@@ -346,6 +346,37 @@ def update_email_from_excel():
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
     finally:
         db.close()  # Close the session
+
+import os
+
+
+@app.route('/export_users', methods=['GET'])
+def export_user_data():
+    # Query user data from the database
+    users = db.query(User).all()
+    response = [user_serializer(user) for user in users]
+    file_path = 'test_excel.xlsx'
+
+    # Check if the file exists and is a valid Excel file
+    if os.path.exists(file_path):
+        try:
+            df = pd.read_excel(file_path, engine='openpyxl')
+        except Exception as e:
+            # Handle case where file exists but isn't a valid Excel file
+            print(f"Error reading Excel file: {e}")
+            df = pd.DataFrame(columns=['id', 'name', 'email', 'created_date'])
+    else:
+        # If file doesn't exist, create an empty DataFrame
+        df = pd.DataFrame(columns=['id', 'name', 'email', 'created_date'])
+
+    # Append the new data to the DataFrame
+    df = pd.concat([df, pd.DataFrame(response)], ignore_index=True)
+
+    # Write the updated DataFrame back to the Excel file
+    df.to_excel(file_path, index=False, engine='openpyxl')
+
+    # Return the user data as a JSON response
+    return jsonify(response)
 
 
 @app.route('/')

@@ -9,6 +9,12 @@ def get_all_serializer(user):
             "first name": user.first_name,
             "last name": user.last_name}
 
+def user_serializer(user):
+    return {"id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "created_date": user.created_date}
+
 
 def serialize_user(user):
     return {"id": user.id, "username": user.username, "email": user.email}
