@@ -146,6 +146,28 @@ def update_user(user_id: int):
     else:
         return jsonify({"message": f"User with ID {user_id} not found"})
 
+@app.route('/updateuser', methods=['PATCH'])
+def update_user2():
+    data = request.json
+    user_id = data.get('user_id')
+    username = data.get('username')
+    email = data.get('email')
+
+    user = db.query(User).filter(User.id==user_id).first()
+
+    if user is None:
+        return jsonify({"error": "User not found"}), 404
+
+    user.username = username
+    user.email = email
+
+    db.commit()
+
+    return jsonify({"message": "User updated successfully", "user": {"id": user.id, "username": user.username}}), 200
+
+
+
+
 
 @app.route('/get-user/', methods=['GET'])
 def get_user():
