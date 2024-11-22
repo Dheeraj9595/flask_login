@@ -1,4 +1,5 @@
 from crypt import methods
+from os import error
 
 import openpyxl
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
@@ -14,7 +15,7 @@ from pydantic import BaseModel
 from db import create
 from serializers import get_all_serializer, serialize_user, RegisterUserSerializer
 from todos import bp
-from users import users_bp, user_serializer
+from users import users_bp, user_serializer, user_return_serializer
 from flask_login import UserMixin, LoginManager, login_user, logout_user, current_user, login_required
 import pandas as pd
 
@@ -79,26 +80,33 @@ def register_user():
             user_data = request.get_json()
         else:
             user_data = request.form.to_dict()
-        validated_data = RegisterUserSerializer(**user_data)
+        username = user_data.get("username")
+        existing_user = db.query(User).filter(User.username == username).first()
+        if existing_user:
+            return jsonify({"message": "User with this username already registered"})
+        else:
+            validated_data = RegisterUserSerializer(**user_data)
 
-        username = validated_data.username
-        password = validated_data.password
-        email = validated_data.email
-        first_name = validated_data.first_name
-        last_name = validated_data.last_name
+            username = validated_data.username
+            password = validated_data.password
+            email = validated_data.email
+            first_name = validated_data.first_name
+            last_name = validated_data.last_name
 
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-        new_user = User(username=username,
-                        password=hashed_password,
-                        first_name=first_name,
-                        last_name=last_name,
-                        email=email
-                        )
-        create(db, new_user)
-        return jsonify({"message": "User registered successfully"}), 200, {'Content-Type': 'application/json'}
-    except IntegrityError:
+            new_user = User(username=username,
+                            password=hashed_password,
+                            first_name=first_name,
+                            last_name=last_name,
+                            email=email
+                            )
+            create(db, new_user)
+            return jsonify({"message": "User registered successfully"}), 200, {'Content-Type': 'application/json'}
+    except IntegrityError as e:
+        # Rollback and log the error
         db.rollback()
+        print(f"Database error: {e}")
         return jsonify({"error": "Username already exists"}), 400
     finally:
         db.close()
@@ -131,7 +139,8 @@ def get_detail_user():
 def all_users():
     users = db.query(User).all()
     serialize_users = [serialize_user(user) for user in users]
-    return {"users": serialize_users}
+    count = len(users)
+    return {"users": serialize_users, "User Count": count}
 
 
 @app.route('/update-user/<user_id>/', methods=['PATCH'])
@@ -376,7 +385,7 @@ import os
 def export_user_data():
     # Query user data from the database
     users = db.query(User).all()
-    response = [user_serializer(user) for user in users]
+    response = [user_return_serializer(user) for user in users]
     file_path = 'test_excel.xlsx'
 
     # Check if the file exists and is a valid Excel file
@@ -411,8 +420,69 @@ def admin_users():
 def login_page():
     return render_template('login_page.html')
 
+@app.route('/bulk-create', methods=['POST'])
+def bulk_user_create():
+    try:
+        users_data = request.get_json()
 
+        if not users_data:
+            return jsonify({"message": "Please provide user data"})
+        users = []
+        existing_users = []
+        for user_data in users_data:
+            username = user_data.get('username')
+            password = user_data.get('password')
+            email = user_data.get('email')
+            firstname = user_data.get('first_name')
+            lastname = user_data.get('last_name')
 
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+            #check if user already exists
+
+            existing = db.query(User).filter(User.username== username).first()
+
+            if existing:
+                existing_users.append(existing)
+                continue
+
+            #create a new user instance
+            new_user = User(username=username,
+                            password=hashed_password,
+                            email=email,
+                            first_name=firstname,
+                            last_name=lastname)
+            users.append(new_user)
+        db.bulk_save_objects(users)
+        db.commit()
+        return jsonify({"message": f"{len(users)} Users saved successfully {existing_users} already registerd!!!"})
+    except IntegrityError as e:
+        db.rollback()
+        return jsonify(
+            {"error": "Integrity error occurred. Likely duplicate usernames or emails.", "details": str(e)}), 400
+
+    except Exception as e:
+        db.rollback()
+        return jsonify({"error": "An error occurred while creating users.", "details": str(e)}), 500
+
+    finally:
+        db.close()
+
+@app.route('/delete/<user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    try:
+        user = db.query(User).filter(User.id==user_id).first()
+        if user is None:
+            return jsonify({"message": "user with user id {user_id} is deleted or not existed!!!"})
+        if user:
+            db.delete(user)
+            db.commit()
+        return jsonify({"message": f"user with user_id: {user_id} and username: {user.username}  is deleted successfully!!!"})
+    except Exception as e:
+        return jsonify({"message": f"there is a error {str(e)}"})
+
+    finally:
+        db.close()
 
 
 app.register_blueprint(bp, url_prefix='/todos')

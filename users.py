@@ -83,6 +83,9 @@ def user_serializer(user):
     return {"username": user.username, "email": user.email, "name": user.first_name + user.last_name}
 
 
+def user_return_serializer(user):
+    return {"id": user.id,"name": user.username, "email": user.email, "created_date": user.created_date}
+
 @users_bp.route('/show-user/<user_id>/', methods=['GET'])
 def show_user_by_id(user_id: None):
     if user_id:
