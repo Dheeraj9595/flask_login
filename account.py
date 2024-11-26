@@ -142,38 +142,13 @@ def generate_atm_pin():
     except Exception as e:
         return jsonify({"message": f"Error is {str(e)}"})
 
-# @account_bp.route('/user-notification/<user_id>', methods=['GET'])
-# def user_notification(user_id):
-#     try:
-#         if not user_id:
-#             return jsonify({"message": "user id is mandatory"})
-#         notifications = db.query(Notifications).filter(Notifications.user_id == user_id).all()
-#         notification_serializer = [{"id": user.id, "message": user.content} for user in notifications]
-#         return jsonify(notification_serializer)
-#     except Exception as e:
-#         return jsonify({"message": f"Error is {str(e)}"})
-
 @account_bp.route('/user-notification/<user_id>', methods=['GET'])
 def user_notification(user_id):
     try:
         if not user_id:
             return jsonify({"message": "user id is mandatory"})
-
-        user_notifications = db.query(Notifications).filter(Notifications.user_id == user_id).all()
-
-        # Format notifications into a more readable JSON structure
-        formatted_notifications = []
-        for notification in user_notifications:
-            formatted_notifications.append({
-                'id': notification.id,
-                'message': notification.content,
-                # Add other fields as needed
-            })
-
-        return jsonify(formatted_notifications)
+        notifications = db.query(Notifications).filter(Notifications.user_id == user_id).all()
+        notification_serializer = [{"id": user.id, "message": user.content} for user in notifications]
+        return jsonify(notification_serializer)
     except Exception as e:
-        # Handle specific exceptions for better error messages
-        if isinstance(e, SQLAlchemyError):
-            return jsonify({"message": "Database error occurred"}), 500
-        else:
-            return jsonify({"message": f"An error occurred: {str(e)}"}), 500
+        return jsonify({"message": f"Error is {str(e)}"})
