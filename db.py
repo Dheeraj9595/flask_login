@@ -1,3 +1,5 @@
+from operator import index
+
 from flask_bcrypt import Bcrypt
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime, \
@@ -32,6 +34,7 @@ class User(AbstractModel):
     email = Column(String(100), unique=False, index=True)
     password = Column(String(200), index=True)
     todos = relationship("Todo", back_populates="user")
+    atm_pin = Column(Integer, index=True)
 
     def __repr__(self):
         return '<User %r' % self.username
@@ -53,7 +56,28 @@ class Todo(AbstractModel):
 class Notifications(AbstractModel):
     __tablename__ = "notifications"
     content = Column(String(255), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id'))
 
+class Bank_Account(AbstractModel):
+    __tablename__ = "bank_account"
+    account_balance = Column(Integer, index=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+
+    @property
+    def balance(self):
+        # Getter for account balance
+        return self.account_balance
+
+
+    def withdrawal(self, amount):
+        if amount <=0:
+            raise ValueError('Withdrawal amount should be more than zero')
+        self.account_balance -= amount
+
+    def add_balance(self, deposite_amount):
+        if deposite_amount <=0:
+            raise ValueError('Deposite amount must be postive')
+        self.account_balance += deposite_amount
 
 # Create database tables
 Base.metadata.create_all(bind=engine)

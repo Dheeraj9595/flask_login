@@ -1,4 +1,5 @@
 from crypt import methods
+from csv import excel
 from os import error
 
 import openpyxl
@@ -6,9 +7,10 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, f
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_bcrypt import Bcrypt  # Make sure to install flask-bcrypt
+from six import add_move
 from werkzeug.utils import secure_filename
 
-from db import SessionLocal, User
+from db import SessionLocal, User, Bank_Account, Notifications
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from pydantic import BaseModel
@@ -18,6 +20,8 @@ from todos import bp
 from users import users_bp, user_serializer, user_return_serializer
 from flask_login import UserMixin, LoginManager, login_user, logout_user, current_user, login_required
 import pandas as pd
+
+from utils import require_api_key
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -484,6 +488,158 @@ def delete_user(user_id):
     finally:
         db.close()
 
+@app.route('/delete', methods=['DELETE'])
+def delete_multiple():
+    try:
+        users_list = request.get_json()
+        message = []
+        # breakpoint()
+        for user in users_list:
+            user = db.query(User).filter(User.id==user).first()
+            if user is None:
+                message.append({"message": f"user with user id {user.id} not found"})
+            if user:
+                db.delete(User)
+                db.commit()
+            message.append({"message": f"user with user id {user.id} is deleted successfully"})
+    except Exception as e:
+        return jsonify({"message": f"there is a error {str(e)}"})
+
+    finally:
+        db.close()
+
+
+
+@app.route('/deposite', methods=['POST'])
+@require_api_key
+def deposite():
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        balance_to_add = data.get('deposite_amount')
+
+        # Validate input
+        if not user_id or balance_to_add is None:
+            return jsonify({"message": "Please provide user_id and deposite_amount"}), 400
+
+        if balance_to_add <= 0:
+            return jsonify({"message": "Deposit amount must be positive"}), 400
+
+        # Retrieve the bank account from the database
+        bank_acc = db.query(Bank_Account).filter_by(user_id=user_id).first()
+        if not bank_acc:
+            return jsonify({"message": "Bank account not found"}), 404
+
+        # Update the balance
+        bank_acc.add_balance(balance_to_add)
+        notification = Notifications(
+            content=f"+ Deposited {balance_to_add}."
+        )
+        db.add(notification)
+        db.commit()
+
+        return jsonify(
+            {"message": f"Account balance updated for user {user_id}", "new_balance": bank_acc.account_balance}), 200
+
+    except Exception as e:
+        return jsonify({"message": f"Error: {str(e)}"}), 500
+
+    finally:
+        db.close()
+
+@app.route('/withdrawal', methods=['POST'])
+@require_api_key
+def withdrawal():
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        amount = data.get('amount')
+        atm_pin = data.get('atm_pin')
+
+        #input validation with all the required fields
+        if not user_id or not amount or not atm_pin:
+            return jsonify({"message": "user_id, amount and atm_pin are mandatory please provide"})
+
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            return jsonify({"message": "User not found"}),404
+
+        #atm pin validation
+        if user.atm_pin != atm_pin:
+            return jsonify({"message": "ATM pin is not correct or invalid"}),403
+
+        bank_account = db.query(Bank_Account).filter(Bank_Account.user_id == user_id).first()
+        if not bank_account:
+            return jsonify({"message": "Bank account not found"}), 404
+
+        #Perform withdrawal
+        if amount <= 0:
+            return jsonify({"message": "Withdrawal amount must be positive"}), 400
+
+        if bank_account.account_balance < amount:
+            return jsonify({"message": "Insufficient funds"}), 400
+
+        bank_account.withdrawal(amount)
+
+        # Create a notification
+        notification = Notifications(
+                    content=f"- Withdrew {amount}.",
+                    user_id=user_id
+                )
+        db.add(notification)
+
+        # Commit changes
+        db.commit()
+
+        # Return success response
+        return jsonify({
+                    "message": f"Amount {amount} has been deducted from your account balance.",
+                    "updated_balance": bank_account.account_balance
+                }), 200
+
+    except Exception as e:
+            db.rollback()
+            return jsonify({"message": f"Error: {str(e)}"}), 500
+
+
+
+@app.route('/balance/<user_id>', methods=['GET'])
+@require_api_key
+def check_balance(user_id):
+    user_id = user_id
+    try:
+        try:
+            user_obj = db.query(Bank_Account).filter(Bank_Account.user_id==user_id).first()
+        except Exception as e:
+            return jsonify({"message": f"Error {str(e)}"})
+        if not user_obj:
+            return jsonify({"message": f"User with user id {user_id} is not found in database"})
+        balance_of_user = user_obj.balance
+        if balance_of_user:
+            return jsonify({"balance": f"user balance is {balance_of_user}"})
+        return jsonify({"message": "user balance is 0"})
+    except Exception as e:
+        return jsonify({"message": f"Error {str(e)}"})
+    finally:
+        db.close()
+
+@app.route('/generate_pin', methods=['POST'])
+@require_api_key
+def generate_atm_pin():
+    try:
+        data = request.get_json()
+        user_id = data.get("user_id")
+        atm_pin = data.get("atm_pin")
+        required_fields = ['user_id']
+        # breakpoint()
+        if not user_id:
+            return jsonify({"message": "user id is mandatory to generate atm pin please provide atm pin"})
+        user_obj = db.query(User).filter(User.id == user_id).first()
+        user_obj.atm_pin = atm_pin
+        db.commit()
+        return jsonify({"message": f"Your atm pin is set successfully pin is {atm_pin}"})
+    except Exception as e:
+        return jsonify({"message": f"Error is {str(e)}"})
 
 app.register_blueprint(bp, url_prefix='/todos')
 app.register_blueprint(users_bp)
