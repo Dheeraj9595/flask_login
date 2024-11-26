@@ -1,8 +1,4 @@
-from crypt import methods
-from importlib.resources import contents
-
 from flask import request, jsonify, Blueprint
-from sqlalchemy.exc import SQLAlchemyError
 
 from db import User, SessionLocal, Bank_Account, Notifications
 from utils import require_api_key
@@ -38,17 +34,17 @@ def open_bank_account():
     finally:
         db.close()
 
-@account_bp.route('/deposite', methods=['POST'])
+@account_bp.route('/deposit', methods=['POST'])
 @require_api_key
-def deposite():
+def deposit():
     try:
         data = request.get_json()
         user_id = data.get('user_id')
-        balance_to_add = data.get('deposite_amount')
+        balance_to_add = data.get('deposit_amount')
 
         # Validate input
         if not user_id or balance_to_add is None:
-            return jsonify({"message": "Please provide user_id and deposite_amount"}), 400
+            return jsonify({"message": "Please provide user_id and deposit_amount"}), 400
 
         if balance_to_add <= 0:
             return jsonify({"message": "Deposit amount must be positive"}), 400
@@ -159,7 +155,6 @@ def generate_atm_pin():
         data = request.get_json()
         user_id = data.get("user_id")
         atm_pin = data.get("atm_pin")
-        required_fields = ['user_id']
         if not user_id:
             return jsonify({"message": "user id is mandatory to generate atm pin please provide atm pin"})
         user_obj = db.query(User).filter(User.id == user_id).first()
