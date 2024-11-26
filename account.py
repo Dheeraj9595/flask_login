@@ -1,4 +1,5 @@
 from crypt import methods
+from importlib.resources import contents
 
 from flask import request, jsonify, Blueprint
 from sqlalchemy.exc import SQLAlchemyError
@@ -10,6 +11,32 @@ db = SessionLocal()
 
 # users_bp = Blueprint('users', __name__, url_prefix='/users')
 account_bp = Blueprint('account', __name__, url_prefix='')
+
+
+
+@account_bp.route('/open-account', methods=['POST'])
+def open_bank_account():
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        initial_amount = data.get('initial_amount')
+        if not user_id and initial_amount:
+            return jsonify({"message": "user id and initial amount are mandatory"})
+        new_account = Bank_Account(user_id= user_id,
+                                   account_balance= initial_amount)
+        notification = Notifications(
+            content=f"+ Deposited {initial_amount}.",
+            user_id=user_id
+        )
+        db.add(notification)
+        db.add(new_account)
+        db.commit()
+        return jsonify({"message": "your account is now open with our bank thank you."})
+    except Exception as e:
+        return jsonify({"message": f"Error: {str(e)}"}), 500
+
+    finally:
+        db.close()
 
 @account_bp.route('/deposite', methods=['POST'])
 @require_api_key
@@ -148,7 +175,7 @@ def user_notification(user_id):
         if not user_id:
             return jsonify({"message": "user id is mandatory"})
         notifications = db.query(Notifications).filter(Notifications.user_id == user_id).all()
-        notification_serializer = [{"id": user.id, "message": user.content} for user in notifications]
-        return jsonify(notification_serializer)
+        notifications_serializer = [{"id": user.id, "message": user.content} for user in notifications]
+        return jsonify(notifications_serializer)
     except Exception as e:
         return jsonify({"message": f"Error is {str(e)}"})

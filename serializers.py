@@ -15,7 +15,6 @@ def user_serializer(user):
             "email": user.email,
             "created_date": user.created_date}
 
-
 def serialize_user(user):
     return {"id": user.id, "username": user.username, "email": user.email}
 
