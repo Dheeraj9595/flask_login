@@ -1,4 +1,8 @@
+from crypt import methods
+
 from flask import request, jsonify, Blueprint
+from sqlalchemy.exc import SQLAlchemyError
+
 from db import User, SessionLocal, Bank_Account, Notifications
 from utils import require_api_key
 
@@ -30,7 +34,8 @@ def deposite():
         # Update the balance
         bank_acc.add_balance(balance_to_add)
         notification = Notifications(
-            content=f"+ Deposited {balance_to_add}."
+            content=f"+ Deposited {balance_to_add}.",
+            user_id = user_id
         )
         db.add(notification)
         db.commit()
@@ -136,3 +141,39 @@ def generate_atm_pin():
         return jsonify({"message": f"Your atm pin is set successfully pin is {atm_pin}"})
     except Exception as e:
         return jsonify({"message": f"Error is {str(e)}"})
+
+# @account_bp.route('/user-notification/<user_id>', methods=['GET'])
+# def user_notification(user_id):
+#     try:
+#         if not user_id:
+#             return jsonify({"message": "user id is mandatory"})
+#         notifications = db.query(Notifications).filter(Notifications.user_id == user_id).all()
+#         notification_serializer = [{"id": user.id, "message": user.content} for user in notifications]
+#         return jsonify(notification_serializer)
+#     except Exception as e:
+#         return jsonify({"message": f"Error is {str(e)}"})
+
+@account_bp.route('/user-notification/<user_id>', methods=['GET'])
+def user_notification(user_id):
+    try:
+        if not user_id:
+            return jsonify({"message": "user id is mandatory"})
+
+        user_notifications = db.query(Notifications).filter(Notifications.user_id == user_id).all()
+
+        # Format notifications into a more readable JSON structure
+        formatted_notifications = []
+        for notification in user_notifications:
+            formatted_notifications.append({
+                'id': notification.id,
+                'message': notification.content,
+                # Add other fields as needed
+            })
+
+        return jsonify(formatted_notifications)
+    except Exception as e:
+        # Handle specific exceptions for better error messages
+        if isinstance(e, SQLAlchemyError):
+            return jsonify({"message": "Database error occurred"}), 500
+        else:
+            return jsonify({"message": f"An error occurred: {str(e)}"}), 500
