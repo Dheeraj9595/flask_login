@@ -1,4 +1,9 @@
+import json
+import os
+from crypt import methods
+
 from flask import request, jsonify, Blueprint
+from starlette import requests
 
 from db import User, SessionLocal, Bank_Account, Notifications
 from utils import require_api_key
@@ -173,3 +178,96 @@ def user_notification(user_id):
         return jsonify(notifications_serializer)
     except Exception as e:
         return jsonify({"message": f"Error is {str(e)}"})
+
+@account_bp.route('/bankaccounts', methods=['GET'])
+@require_api_key
+def all_bank_accounts():
+    try:
+        bank_accounts = db.query(Bank_Account).all()
+        bank_account_serializer = [{"user_id": user.id, "balance": user.account_balance} for user in bank_accounts]
+        return jsonify({"data": bank_account_serializer})
+    except Exception as e:
+        return jsonify({"message": f"Error is {str(e)}"})
+    finally:
+        db.close()
+
+import requests
+
+@account_bp.route('/bankacc/<user_id>/', methods=['GET'])
+def specific_bank_account(user_id):
+    try:
+        response = requests.get('http://localhost:5000/bankaccounts', headers={'x-api-key': os.environ.get('api_key')})
+        data = response.json()
+        users_data = data.get('data', [])
+        for user_data in users_data:
+            if user_data['user_id'] == int(user_id):
+                data = user_data['balance']
+                return jsonify({"account_balance": data})
+        return jsonify({"message": f"user not found with given user id {user_id}"})
+    except Exception as e:
+        return jsonify({"message": f"Error is {str(e)}"})
+
+# @account_bp.route('/depositapi', methods=['POST'])
+# def deposite_amount_using_api():
+#     try:
+#         data = request.get_json()
+#         user_id = data.get('user_id')
+#         deposit_amount = data.get('deposit_amount')
+#         payload = {"user_id": user_id, "deposit_amount": deposit_amount}
+#         headers = {'Content-Type': 'application/json'}
+#         api_key = os.environ.get('api_key')  # Replace with your function to retrieve the key
+#         headers['x-api-key'] = api_key
+#         response = requests.post(url='http://localhost:5000/deposit', data=json.dumps(payload), headers=headers)
+#         updated_balance = requests.get(url=f'http://localhost:5000/balance/{user_id}', headers=headers)
+#
+#         return jsonify({"message": f"your balance is updated with {deposit_amount} for user_id : {user_id} and updated balance is {updated_balance.json().get('balance')}"})
+#     except Exception as e:
+#         return jsonify({"message": f"Error is {str(e)}"})
+
+@account_bp.route('/depositapi', methods=['POST'])
+def deposit_amount_using_api():
+    try:
+        # Parse and validate input
+        data = request.get_json()
+        user_id = data.get('user_id')
+        deposit_amount = data.get('deposit_amount')
+        if not user_id or not deposit_amount:
+            return jsonify({"message": "user_id and deposit_amount are required"}), 400
+        if deposit_amount <= 0:
+            return jsonify({"message": "Deposit amount must be greater than zero"}), 400
+        api_key = os.environ.get('api_key')
+        if not api_key:
+            return jsonify({"message": "API key not configured"}), 500
+        headers = {
+            'Content-Type': 'application/json',
+            'x-api-key': api_key
+        }
+        payload = {
+            "user_id": user_id,
+            "deposit_amount": deposit_amount
+        }
+        deposit_response = requests.post(
+            url='http://localhost:5000/deposit',
+            json=payload,
+            headers=headers
+        )
+        if deposit_response.status_code != 200:
+            return jsonify({
+                "message": "Failed to deposit amount",
+                "details": deposit_response.json().get('message', 'Unknown error')
+            }), deposit_response.status_code
+        updated_balance = deposit_response.json().get('new_balance')
+        if updated_balance is None:
+            return jsonify({
+                "message": "Deposit succeeded but balance information is missing"
+            }), 500
+        return jsonify({
+            "message": f"Your balance has been updated by {deposit_amount} for user_id: {user_id}.",
+            "updated_balance": updated_balance
+        }), 200
+    except requests.exceptions.RequestException as req_err:
+        return jsonify({"message": f"API Request Error: {str(req_err)}"}), 500
+    except Exception as e:
+        return jsonify({"message": f"Unexpected Error: {str(e)}"}), 500
+
+#TODO balance transfer between users
