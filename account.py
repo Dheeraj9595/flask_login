@@ -5,7 +5,6 @@ from utils import require_api_key
 
 db = SessionLocal()
 
-# users_bp = Blueprint('users', __name__, url_prefix='/users')
 account_bp = Blueprint('account', __name__, url_prefix='')
 
 
