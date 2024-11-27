@@ -180,9 +180,6 @@ def update_user2():
     return jsonify({"message": "User updated successfully", "user": {"id": user.id, "username": user.username}}), 200
 
 
-def new():
-    pass
-
 
 @app.route('/get-user/', methods=['GET'])
 def get_user():
