@@ -173,7 +173,10 @@ def user_notification(user_id):
     try:
         if not user_id:
             return jsonify({"message": "user id is mandatory"})
-        notifications = db.query(Notifications).filter(Notifications.user_id == user_id).all()
+        notifications = (db.query(Notifications)
+                         .filter(Notifications.user_id == user_id)
+                         .order_by(Notifications.created_date.desc())
+                         .all())
         notifications_serializer = [{"id": user.id, "message": user.content} for user in notifications]
         return jsonify(notifications_serializer)
     except Exception as e:
@@ -271,3 +274,41 @@ def deposit_amount_using_api():
         return jsonify({"message": f"Unexpected Error: {str(e)}"}), 500
 
 #TODO balance transfer between users
+
+@account_bp.route('/transfer-balance', methods=['POST'])
+def balance_transfer():
+    try:
+
+        #take the args from json from user id to user id and balance and atm pin
+        data = request.get_json()
+        from_user_id = data.get('from_user_id')
+        to_user_id = data.get('to_user_id')
+        amount = data.get('amount')
+        atm_pin = data.get('atm_pin')
+
+        # Validate input
+        if not all([from_user_id, to_user_id, amount, atm_pin]):
+            return jsonify({"error": "Missing required fields [from_user_id, to_user_id, amount, atm_pin] all fields are required"}), 400
+
+        from_account = db.query(Bank_Account).filter(Bank_Account.user_id == from_user_id).first()
+        from_user = db.query(User).filter(User.id == from_user_id).first()
+        to_user = db.query(User).filter(User.id == to_user_id).first()
+        if from_user.atm_pin != atm_pin:
+            return jsonify({"message": "Invalid ATM Pin"})
+        #balance transfer
+        result = from_account.balance_transfer(from_user_id=from_user_id,
+                                               to_user_id=to_user_id,
+                                               amount=amount)
+        return jsonify({
+            "message": f"Successfully transferred {amount} from user {from_user.username} to user {to_user.username}",
+            "from_user_balance": result["from_user_balance"],
+            "to_user_balance": result["to_user_balance"]
+        })
+    except ValueError as ve:
+        return jsonify({"error": str(ve)}), 400
+
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+
+
+
