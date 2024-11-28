@@ -273,8 +273,6 @@ def deposit_amount_using_api():
     except Exception as e:
         return jsonify({"message": f"Unexpected Error: {str(e)}"}), 500
 
-#TODO balance transfer between users
-
 @account_bp.route('/transfer-balance', methods=['POST'])
 def balance_transfer():
     try:
