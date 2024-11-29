@@ -1,6 +1,5 @@
 import json
 import os
-from crypt import methods
 
 from flask import request, jsonify, Blueprint
 from starlette import requests

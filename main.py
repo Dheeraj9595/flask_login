@@ -1,4 +1,3 @@
-from crypt import methods
 from csv import excel
 from os import error
 import os
