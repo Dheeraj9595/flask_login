@@ -1,7 +1,7 @@
 from crypt import methods
 from csv import excel
 from os import error
-
+import os
 import openpyxl
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from flask_admin import Admin
@@ -11,6 +11,7 @@ from six import add_move
 from werkzeug.utils import secure_filename
 
 from account import account_bp
+# from account import account_bp
 from db import SessionLocal, User, Bank_Account, Notifications
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
@@ -21,12 +22,32 @@ from todos import bp
 from users import users_bp, user_serializer, user_return_serializer
 from flask_login import UserMixin, LoginManager, login_user, logout_user, current_user, login_required
 import pandas as pd
+from flask import Flask
+from flask_mail import Mail, Message
 
 from utils import require_api_key
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 db = SessionLocal()
+
+# Flask-Mail Configuration
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = os.environ.get('email')  # Replace with your email
+app.config['MAIL_PASSWORD'] = os.environ.get('password')         # Replace with your email password or app-specific password
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('email')
+app.config['MAIL_MAX_EMAILS'] = 5
+app.config['MAIL_SUPPRESS_SEND'] = False
+app.config['MAIL_ASCII_ATTACHMENTS'] = False
+
+# Initialize Flask-Mail
+mail = Mail(app)
+
+
+
 
 # Setup Flask-Login
 login_manager = LoginManager(app)
@@ -53,6 +74,24 @@ admin = Admin(app, name='My Admin Panel', template_mode='bootstrap3')
 # Your existing routes go here...
 
 admin.add_view(ModelView(User, db))
+
+
+@app.route('/send-email', methods=['POST'])
+def send_email():
+    data = request.get_json()
+    subject = data.get('subject')
+    recipient = data.get('recipient')
+    body = data.get('body')
+
+    if not (subject and recipient and body):
+        return 'Invalid request. Please provide subject, recipient, and body parameters.'
+
+    msg = Message(subject=subject, sender='dheeraj.systango@gmail.com', recipients=[recipient])
+    msg.body = body
+    mail.send(msg)
+
+    return 'Email sent successfully!!!'
+
 
 # Render todo form
 @app.route('/todo/', methods=['GET'])
@@ -513,4 +552,5 @@ app.register_blueprint(account_bp)
 app.register_blueprint(users_bp)
 
 if __name__ == "__main__":
+    print("*******************FLASK APP is loading...*********************")
     app.run(host='0.0.0.0', port=5000, debug=True)
