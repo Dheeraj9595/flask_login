@@ -15,11 +15,14 @@ def user_serializer(user):
             "email": user.email,
             "created_date": user.created_date}
 
+
 def serialize_user(user):
     return {"id": user.id, "username": user.username, "email": user.email}
 
+
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
+
 
 class RegisterUserSerializer(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)  # Mandatory

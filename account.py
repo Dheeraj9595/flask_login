@@ -6,6 +6,7 @@ from starlette import requests
 
 from db import User, SessionLocal, Bank_Account, Notifications
 from utils import require_api_key
+from sqlalchemy.orm import joinedload
 
 db = SessionLocal()
 
@@ -440,5 +441,42 @@ def change_password():
             )
         else:
             return jsonify({"message": "old password is not correct"})
+    except Exception as e:
+        return jsonify({"message": f"Error : {str(e)}"})
+
+
+@account_bp.route('/eligibility', methods=['GET'])
+def check_loan_eligibility():
+    try:
+        eligible_users = (
+            db.query(User)
+            .options(joinedload(User.bank_accounts))  # Eager load bank accounts
+            .filter(User.bank_accounts.any(Bank_Account.account_balance > 300000))
+            .all()
+        )
+        if not eligible_users:
+            return jsonify({"message": "there are no users with eligiblity criteria"})
+        response = []
+        for user in eligible_users:
+            response.append(
+                {
+                    "user_id": user.id,
+                    "username": user.username,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "email": user.email,
+                    "bank_accounts": [
+                        {
+                            "account_id": account.id,
+                            "account_balance": account.account_balance,
+                        }
+                        for account in user.bank_accounts
+                        if account.account_balance > 300000
+                    ],
+                }
+            )
+        return jsonify(
+            {"message": "List of eligible users", "eligible_users": response}
+        )
     except Exception as e:
         return jsonify({"message": f"Error : {str(e)}"})
