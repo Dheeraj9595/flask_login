@@ -7,6 +7,7 @@ from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateT
 import datetime
 from flask import jsonify
 from sqlalchemy.exc import IntegrityError
+import random
 
 DATABASE_URL = "sqlite:///flasklogin.sqlite"
 
@@ -41,6 +42,11 @@ class User(AbstractModel):
 
     def password_is_valid(self, password):
         return bcrypt.check_password_hash(self.password, password)
+
+    def atm_pin_generator(self):
+        pin = random.randint(1000, 9999)
+        self.atm_pin = pin
+        return pin
 
 class Todo(AbstractModel):
     __tablename__ = "todos"

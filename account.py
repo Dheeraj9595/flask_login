@@ -210,22 +210,6 @@ def specific_bank_account(user_id):
     except Exception as e:
         return jsonify({"message": f"Error is {str(e)}"})
 
-# @account_bp.route('/depositapi', methods=['POST'])
-# def deposite_amount_using_api():
-#     try:
-#         data = request.get_json()
-#         user_id = data.get('user_id')
-#         deposit_amount = data.get('deposit_amount')
-#         payload = {"user_id": user_id, "deposit_amount": deposit_amount}
-#         headers = {'Content-Type': 'application/json'}
-#         api_key = os.environ.get('api_key')  # Replace with your function to retrieve the key
-#         headers['x-api-key'] = api_key
-#         response = requests.post(url='http://localhost:5000/deposit', data=json.dumps(payload), headers=headers)
-#         updated_balance = requests.get(url=f'http://localhost:5000/balance/{user_id}', headers=headers)
-#
-#         return jsonify({"message": f"your balance is updated with {deposit_amount} for user_id : {user_id} and updated balance is {updated_balance.json().get('balance')}"})
-#     except Exception as e:
-#         return jsonify({"message": f"Error is {str(e)}"})
 
 @account_bp.route('/depositapi', methods=['POST'])
 def deposit_amount_using_api():
@@ -308,5 +292,52 @@ def balance_transfer():
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
+# #Todo make atm pin reset feature
+@account_bp.route('/forget-password', methods=['POST'])
+def reset_atm_pin():
+    try:
+        #parse the incoming data
+        data = request.get_json()
+        username = data.get('username')
 
+        #check if username is provided
+        if not username:
+            return jsonify({"message": "username is mandatory"}), 400
 
+        #Query the user from database
+        user = db.query(User).filter(User.username==username).first()
+        if not user or user is None:
+            return jsonify({"message": "user not found with given username"})
+
+        #Generate new atm pin
+        new_pin = user.atm_pin_generator()
+
+        #Ensure the user has registered email
+        user_email = user.email
+        if not user_email:
+            return jsonify({"message": "User email is mandatory please provide email to send reset atm pin"})
+
+        #Update the user's atm_pin in database
+        user.atm_pin = new_pin
+        db.commit()
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        payload = {
+            "subject": "test email",
+            "recipient": user_email,
+            "body": f"Your new ATM pin is: {new_pin}. Please keep it secure."
+                }
+        response = requests.post(
+            url='http://localhost:5000/send-email',
+            json=payload,
+            headers=headers
+        )
+
+        if response.status_code == 200:
+           return jsonify({"message": f"Reset ATM pin has been sent to your email: {user_email}"}), 200
+        else:
+            return jsonify({"message": "Failed to send email. Please try again later."}), 500
+
+    except Exception as e:
+        return jsonify({"message": f"Error : {str(e)}"})
