@@ -159,14 +159,17 @@ def register_user():
 # Handle login form submission
 @app.route('/login/', methods=['POST'])
 def login_user():
-    username = request.form.get('username')
-    password = request.form.get('password')
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
 
     user = db.query(User).filter_by(username=username).first()
-
+    if not user:
+        return jsonify({"message": "user with username is not present in database"})
+    if not user.password_is_valid(password):
+        return jsonify({"message": "user's password is not correct"})
     if user and user.password_is_valid(password):
-        return redirect(url_for('admin_users'))
-        # return jsonify({"message": "aLogin successful"})
+        return jsonify({"message": "Login successful"})
     else:
         return jsonify({"error": "Invalid username or password"}), 401
 
