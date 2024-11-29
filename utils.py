@@ -11,5 +11,3 @@ def require_api_key(func):
             return jsonify({"message": "Unauthorized: Invalid or missing API key"}), 401
         return func(*args, **kwargs)
     return wrapper
-
-#test merge dev into main
