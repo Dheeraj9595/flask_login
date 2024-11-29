@@ -11,7 +11,6 @@ import random
 
 DATABASE_URL = "sqlite:///flasklogin.sqlite"
 
-
 engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -19,7 +18,8 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 db = SessionLocal()
-bcrypt= Bcrypt()
+bcrypt = Bcrypt()
+
 
 class AbstractModel(Base):
     __abstract__ = True
@@ -36,7 +36,8 @@ class User(AbstractModel):
     password = Column(String(200), index=True)
     todos = relationship("Todo", back_populates="user")
     atm_pin = Column(Integer, index=True)
-    is_active = Column(Boolean, default=True ,index=True)
+    is_active = Column(Boolean, default=True, index=True)
+    bank_accounts = relationship("Bank_Account", back_populates="user")
 
     def __repr__(self):
         return '<User %r' % self.username
@@ -49,6 +50,7 @@ class User(AbstractModel):
         self.atm_pin = pin
         return pin
 
+
 class Todo(AbstractModel):
     __tablename__ = "todos"
     title = Column(String(255), nullable=False)
@@ -60,29 +62,31 @@ class Todo(AbstractModel):
     # Define a relationship with the User model (assuming you have a User model)
     user = relationship("User", back_populates="todos")
 
+
 class Notifications(AbstractModel):
     __tablename__ = "notifications"
     content = Column(String(255), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'))
 
+
 class Bank_Account(AbstractModel):
     __tablename__ = "bank_account"
     account_balance = Column(Integer, index=True)
     user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship("User", back_populates="bank_accounts")
 
     @property
     def balance(self):
         # Getter for account balance
         return self.account_balance
 
-
     def withdrawal(self, amount):
-        if amount <=0:
+        if amount <= 0:
             raise ValueError('Withdrawal amount should be more than zero')
         self.account_balance -= amount
 
     def add_balance(self, deposite_amount):
-        if deposite_amount <=0:
+        if deposite_amount <= 0:
             raise ValueError('Deposite amount must be postive')
         self.account_balance += deposite_amount
 
@@ -92,8 +96,8 @@ class Bank_Account(AbstractModel):
 
         from_account = db.query(Bank_Account).filter(Bank_Account.user_id == from_user_id).first()
         to_account = db.query(Bank_Account).filter(Bank_Account.user_id == to_user_id).first()
-        from_user = db.query(User).filter(User.id==from_user_id).first()
-        to_user = db.query(User).filter(User.id==to_user_id).first()
+        from_user = db.query(User).filter(User.id == from_user_id).first()
+        to_user = db.query(User).filter(User.id == to_user_id).first()
 
         if not from_account or not to_account:
             raise ValueError("One or both users do not have a bank account")
@@ -127,6 +131,7 @@ class Bank_Account(AbstractModel):
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
+
 
 def create(database, item):
     try:
