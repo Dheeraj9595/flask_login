@@ -142,7 +142,7 @@ def check_balance(user_id):
         except Exception as e:
             return jsonify({"message": f"Error {str(e)}"})
         if not user_obj:
-            return jsonify({"message": f"User with user id {user_id} is not found in database"})
+            return jsonify({"message": f"Bank Account with user id {user_id} is not found in database"})
         balance_of_user = user_obj.balance
         if balance_of_user:
             return jsonify({"balance": f"user balance is {balance_of_user}"})

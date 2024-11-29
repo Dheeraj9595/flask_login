@@ -36,6 +36,7 @@ class User(AbstractModel):
     password = Column(String(200), index=True)
     todos = relationship("Todo", back_populates="user")
     atm_pin = Column(Integer, index=True)
+    is_active = Column(Boolean, default=True ,index=True)
 
     def __repr__(self):
         return '<User %r' % self.username
