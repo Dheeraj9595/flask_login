@@ -341,3 +341,34 @@ def reset_atm_pin():
 
     except Exception as e:
         return jsonify({"message": f"Error : {str(e)}"})
+
+
+
+
+@account_bp.route('/change-password', methods=['POST'])
+def change_password():
+    from flask_bcrypt import bcrypt, Bcrypt
+    from main import app
+    bcrypt = Bcrypt(app)
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        old_password = data.get('old_password')
+        new_password = data.get('new_password')
+        #get user instance
+        user = db.query(User).filter(User.id==user_id).first()
+        if not user:
+            return jsonify({"message": f"user with {user_id} not found in database"})
+        if not old_password and new_password:
+            return jsonify({"message": "old password and new password is mandatory"})
+        hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+        if user.password_is_valid(old_password):
+            user.password = hashed_password
+            db.commit()
+            return jsonify({"message": f"Password for {user.username} has been changed successfully...!!!"})
+        else:
+            return jsonify({"message": "old password is not correct"})
+    except Exception as e:
+        return jsonify({"message": f"Error : {str(e)}"})
+
+
