@@ -6,28 +6,23 @@ services:
     container_name: flask-app
     working_dir: /app
     volumes:
-      - .:/app  # Mapping the entire project directory (flask_login) to /app in the container
+      - ./app:/app
     ports:
-      - "5000:5000"  # Map the Flask app port from container to host
+      - "5000:5000"
     environment:
-      - FLASK_APP=main.py  # Your main app file (make sure it's named correctly)
+      - FLASK_APP=your_flask_app.py
       - FLASK_RUN_HOST=0.0.0.0
-      - DATABASE_URL=mysql+mysqlconnector://admin:Root*1234@mysql:3306/flask_login  # Update to your database URL
+      - DATABASE_URL=mysql+mysqlconnector://admin:Root*1234@mysql:3306/flask_login
     command: >
-      sh -c "pip install -r requirements.txt && flask run --host=0.0.0.0"
+      sh -c "pip install -r requirements.txt && flask run"
 
   mysql:
     image: mysql:5.7
     container_name: mysql-db
+    ports:
+      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: Root*1234
       MYSQL_DATABASE: flask_login
       MYSQL_USER: admin
       MYSQL_PASSWORD: Root*1234
-    ports:
-      - "3307:3306"  # Exposing the MySQL port (map to your preferred port)
-    volumes:
-      - mysql-data:/var/lib/mysql  # Persist MySQL data between restarts
-
-volumes:
-  mysql-data:  # Define a named volume to store MySQL data
