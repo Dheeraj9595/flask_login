@@ -30,3 +30,10 @@ class RegisterUserSerializer(BaseModel):
     email: EmailStr  # Mandatory, with automatic email validation
     first_name: Optional[str] = None  # Optional
     last_name: Optional[str] = None  # Optional
+
+class UpdateUserSerializer(BaseModel):
+    username: Optional[str] = None
+    password: Optional[str] = None
+    email: Optional[EmailStr] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
