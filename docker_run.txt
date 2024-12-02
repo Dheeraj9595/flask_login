@@ -1,0 +1,7 @@
+to run application with docker simply change db url with this
+
+DATABASE_URL = "mysql+mysqlconnector://admin:Root*1234@mysql:3306/flask_login"
+
+and rebuild docker with docker-compose up --build
+and the application will run on port 5000 and mysql in 3307 port
+
