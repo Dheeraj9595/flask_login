@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 db = SessionLocal()
 
 # users_bp = Blueprint('users', __name__, url_prefix='/users')
-users_bp = Blueprint('users', __name__, url_prefix='/api/users')
+users_bp = Blueprint("users", __name__, url_prefix="/api/users")
 
 
 class CreateUser(BaseModel):
@@ -22,21 +22,22 @@ class CreateUser(BaseModel):
 
 # Render registration form
 
+
 # Render login form
-@users_bp.route('/login/', methods=['GET'])
+@users_bp.route("/login/", methods=["GET"])
 def render_login():
-    return render_template('login.html')
+    return render_template("login.html")
 
 
-@users_bp.route('/register/', methods=['GET', 'POST'])
+@users_bp.route("/register/", methods=["GET", "POST"])
 def register_user():
     if request.method == "GET":
-        return render_template('register.html')
+        return render_template("register.html")
     elif request.method == "POST":
         user_data = request.json
         user = CreateUser(**user_data)
 
-        hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
+        hashed_password = bcrypt.hashpw(user.password.encode("utf-8"), bcrypt.gensalt())
 
         try:
             # Pass the Pydantic model fields (excluding password) to User constructor
@@ -45,19 +46,26 @@ def register_user():
                 email=user.email,
                 first_name=user.firstname,
                 last_name=user.lastname,
-                password=hashed_password
+                password=hashed_password,
             )
 
             create(db, db_user)
             serialized_user = {"id": db_user.id, "username": db_user.username}
-            return jsonify({"message": "User created successfully", "user": serialized_user})
+            return jsonify(
+                {"message": "User created successfully", "user": serialized_user}
+            )
         except IntegrityError as e:
             db.rollback()
             error_info = e.orig.args
             if "Duplicate entry" in str(error_info):
                 return jsonify({"error": "Username already exists"}), 400
             else:
-                return jsonify({"error": f"An error occurred while creating the user: {e}"}), 500
+                return (
+                    jsonify(
+                        {"error": f"An error occurred while creating the user: {e}"}
+                    ),
+                    500,
+                )
         finally:
             db.close()
 
@@ -80,13 +88,23 @@ def register_user():
 
 
 def user_serializer(user):
-    return {"username": user.username, "email": user.email, "name": user.first_name + user.last_name}
+    return {
+        "username": user.username,
+        "email": user.email,
+        "name": user.first_name + user.last_name,
+    }
 
 
 def user_return_serializer(user):
-    return {"id": user.id,"name": user.username, "email": user.email, "created_date": user.created_date}
+    return {
+        "id": user.id,
+        "name": user.username,
+        "email": user.email,
+        "created_date": user.created_date,
+    }
 
-@users_bp.route('/show-user/<user_id>/', methods=['GET'])
+
+@users_bp.route("/show-user/<user_id>/", methods=["GET"])
 def show_user_by_id(user_id: None):
     if user_id:
         users = db.query(User).filter(User.id == user_id).first()
@@ -99,7 +117,7 @@ def show_user_by_id(user_id: None):
     return serializer
 
 
-@users_bp.route('/update-user/<user_id>/', methods=['PATCH'])
+@users_bp.route("/update-user/<user_id>/", methods=["PATCH"])
 def update_user(user_id: int):
     update_user_data = request.json
     user = db.query(User).filter(User.id == user_id).first()

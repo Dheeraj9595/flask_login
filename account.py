@@ -1,11 +1,11 @@
-import json
 import os
+import requests
 
 from flask import request, jsonify, Blueprint
 from starlette import requests
 
 from db import User, SessionLocal, Bank_Account, Notifications
-from serializers import RegisterUserSerializer, UpdateUserSerializer
+from serializers import UpdateUserSerializer
 from utils import require_api_key
 from sqlalchemy.orm import joinedload
 
@@ -215,7 +215,7 @@ def user_notification(user_id):
         return jsonify({"message": f"Error is {str(e)}"})
 
 
-@account_bp.route("/bankaccounts", methods=["GET"])
+@account_bp.route("/bank-accounts", methods=["GET"])
 @require_api_key
 def all_bank_accounts():
     try:
@@ -231,10 +231,7 @@ def all_bank_accounts():
         db.close()
 
 
-import requests
-
-
-@account_bp.route("/bankacc/<user_id>/", methods=["GET"])
+@account_bp.route("/bank_account/<user_id>/", methods=["GET"])
 def specific_bank_account(user_id):
     try:
         response = requests.get(
@@ -252,7 +249,7 @@ def specific_bank_account(user_id):
         return jsonify({"message": f"Error is {str(e)}"})
 
 
-@account_bp.route("/depositapi", methods=["POST"])
+@account_bp.route("/deposit-api", methods=["POST"])
 def deposit_amount_using_api():
     try:
         # Parse and validate input
@@ -416,7 +413,7 @@ def reset_atm_pin():
 
 @account_bp.route("/change-password", methods=["POST"])
 def change_password():
-    from flask_bcrypt import bcrypt, Bcrypt
+    from flask_bcrypt import Bcrypt
     from main import app
 
     bcrypt = Bcrypt(app)
@@ -446,7 +443,7 @@ def change_password():
         return jsonify({"message": f"Error : {str(e)}"})
 
 
-@account_bp.route('/eligibility', methods=['GET'])
+@account_bp.route("/eligibility", methods=["GET"])
 def check_loan_eligibility():
     try:
         eligible_users = (
@@ -456,7 +453,7 @@ def check_loan_eligibility():
             .all()
         )
         if not eligible_users:
-            return jsonify({"message": "there are no users with eligiblity criteria"})
+            return jsonify({"message": "there are no users with eligibility criteria"})
         response = []
         for user in eligible_users:
             response.append(
@@ -483,7 +480,7 @@ def check_loan_eligibility():
         return jsonify({"message": f"Error : {str(e)}"})
 
 
-@account_bp.route('/update-user/<int:user_id>', methods=['PATCH'])
+@account_bp.route("/update-user/<int:user_id>", methods=["PATCH"])
 def update_user(user_id: int):
     data = request.get_json()
     try:
@@ -496,24 +493,22 @@ def update_user(user_id: int):
         return jsonify({"error": "User not found"}), 404
 
     # Update only the fields that are provided in the request
-    if 'username' in data:
+    if "username" in data:
         user.username = user_data.username
 
     # Optionally, you could handle password, email, first_name, and last_name
     # but only if those fields are provided in the request
 
-    if 'password' in data:  # Only update password if it's in the payload
+    if "password" in data:  # Only update password if it's in the payload
         user.password = user_data.password
 
-    if 'email' in data:  # Only update email if it's in the payload
+    if "email" in data:  # Only update email if it's in the payload
         user.email = user_data.email
 
-    if 'first_name' in data:  # Only update first_name if it's in the payload
+    if "first_name" in data:  # Only update first_name if it's in the payload
         user.first_name = user_data.first_name
 
-    if 'last_name' in data:  # Only update last_name if it's in the payload
+    if "last_name" in data:  # Only update last_name if it's in the payload
         user.last_name = user_data.last_name
     db.commit()
     return jsonify({"message": "User updated successfully"}), 200
-
-
