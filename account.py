@@ -5,6 +5,7 @@ from flask import request, jsonify, Blueprint
 from starlette import requests
 
 from db import User, SessionLocal, Bank_Account, Notifications
+from serializers import RegisterUserSerializer, UpdateUserSerializer
 from utils import require_api_key
 from sqlalchemy.orm import joinedload
 
@@ -480,3 +481,39 @@ def check_loan_eligibility():
         )
     except Exception as e:
         return jsonify({"message": f"Error : {str(e)}"})
+
+
+@account_bp.route('/update-user/<int:user_id>', methods=['PATCH'])
+def update_user(user_id: int):
+    data = request.get_json()
+    try:
+        user_data = UpdateUserSerializer(**data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+    user = db.query(User).get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # Update only the fields that are provided in the request
+    if 'username' in data:
+        user.username = user_data.username
+
+    # Optionally, you could handle password, email, first_name, and last_name
+    # but only if those fields are provided in the request
+
+    if 'password' in data:  # Only update password if it's in the payload
+        user.password = user_data.password
+
+    if 'email' in data:  # Only update email if it's in the payload
+        user.email = user_data.email
+
+    if 'first_name' in data:  # Only update first_name if it's in the payload
+        user.first_name = user_data.first_name
+
+    if 'last_name' in data:  # Only update last_name if it's in the payload
+        user.last_name = user_data.last_name
+    db.commit()
+    return jsonify({"message": "User updated successfully"}), 200
+
+
