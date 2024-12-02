@@ -1,38 +1,25 @@
-from csv import excel
-from os import error
 import os
-import openpyxl
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_bcrypt import Bcrypt  # Make sure to install flask-bcrypt
-from six import add_move
 from werkzeug.utils import secure_filename
 
 from account import account_bp
 
-# from account import account_bp
-from db import SessionLocal, User, Bank_Account, Notifications
-from sqlalchemy.orm import Session
+from db import SessionLocal, User, Bank_Account
 from sqlalchemy.exc import IntegrityError
-from pydantic import BaseModel
 from db import create
 from serializers import get_all_serializer, serialize_user, RegisterUserSerializer
 from todos import bp
-from users import users_bp, user_serializer, user_return_serializer
+from users import users_bp, user_return_serializer
 from flask_login import (
-    UserMixin,
     LoginManager,
-    login_user,
-    logout_user,
     current_user,
-    login_required,
 )
 import pandas as pd
 from flask import Flask
 from flask_mail import Mail, Message
-
-from utils import require_api_key
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -54,7 +41,6 @@ app.config["MAIL_ASCII_ATTACHMENTS"] = False
 
 # Initialize Flask-Mail
 mail = Mail(app)
-
 
 # Setup Flask-Login
 login_manager = LoginManager(app)
@@ -82,6 +68,45 @@ admin = Admin(app, name="My Admin Panel", template_mode="bootstrap3")
 # Your existing routes go here...
 
 admin.add_view(ModelView(User, db))
+admin.add_view(ModelView(Bank_Account, db))
+
+
+@app.route('/users')
+def display_users():
+    users = db.query(User).all()  # Fetch all users from the database
+    return render_template('users.html', users=users)
+
+
+@app.route('/loginhtml')
+def login_html():
+    return render_template('login2.html')
+
+
+@app.route('/transactions')
+def transactions():
+    transactions = [
+        {
+            "type": "Salary Payment",
+            "name": "Jenny Wilson",
+            "date": "7 Nov, 11:03 AM",
+            "transaction_id": "#43756",
+            "amount": 536,
+            "status": "Completed",
+            "type_category": "Expenses"
+        },
+        {
+            "type": "Salary Payment",
+            "name": "Jenny Wilson",
+            "date": "7 Nov, 11:03 AM",
+            "transaction_id": "#43756",
+            "amount": 536,
+            "status": "Completed",
+            "type_category": "Expenses"
+        }
+        # Add more transactions...
+    ]
+    return render_template('transactions.html', transactions=transactions)
+
 
 
 @app.route("/send-email", methods=["POST"])
@@ -349,7 +374,6 @@ def upload_file():
 
 @app.route("/view", methods=["POST"])
 def view():
-
     file = request.files["file"]
     file.save(file.filename)
     data = pd.read_excel(file)
@@ -469,7 +493,7 @@ def update_email_from_excel():
         # Step 3: Update users' email addresses
         for i, user in enumerate(users_to_update):
             if i < len(
-                df
+                    df
             ):  # Ensure we don't go out of bounds if there are more users than emails
                 user.email = df.iloc[i]["email"]  # Assign email from Excel to the user
             else:
@@ -486,9 +510,6 @@ def update_email_from_excel():
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
     finally:
         db.close()  # Close the session
-
-
-import os
 
 
 @app.route("/export_users", methods=["GET"])

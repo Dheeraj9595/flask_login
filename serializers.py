@@ -46,3 +46,8 @@ class UpdateUserSerializer(BaseModel):
     email: Optional[EmailStr] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+
+
+class NotificationSerializer(BaseModel):
+    content: str = None
+    user_id: int = None

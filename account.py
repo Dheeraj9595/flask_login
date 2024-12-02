@@ -5,7 +5,7 @@ from flask import request, jsonify, Blueprint
 from starlette import requests
 
 from db import User, SessionLocal, Bank_Account, Notifications
-from serializers import UpdateUserSerializer
+from serializers import UpdateUserSerializer, NotificationSerializer
 from utils import require_api_key
 from sqlalchemy.orm import joinedload
 
@@ -512,3 +512,13 @@ def update_user(user_id: int):
         user.last_name = user_data.last_name
     db.commit()
     return jsonify({"message": "User updated successfully"}), 200
+
+
+@account_bp.route('/allnotifications', methods=['GET'])
+def all_notifications():
+    try:
+        all_notifications = db.query(Notifications).all()
+        seri = [{"id": user.id,"user id": user.user_id, "message": user.content} for user in all_notifications]
+        return jsonify(seri)
+    except Exception as e:
+        return jsonify({"message": f"Error is : {str(e)}"})
