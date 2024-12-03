@@ -1,5 +1,8 @@
 import os
+import string
 from functools import wraps
+import random
+
 from flask import request, jsonify
 
 
@@ -13,3 +16,8 @@ def require_api_key(func):
         return func(*args, **kwargs)
 
     return wrapper
+
+# Function to generate the transaction ID
+def generate_transaction_id():
+    # 'T' followed by 13 random digits
+    return 'T' + ''.join(random.choices(string.digits, k=13))

@@ -11,12 +11,14 @@ from sqlalchemy import (
     DateTime,
     func,
     Boolean,
-    orm,
+    orm, Float,
 )
 import datetime
 from flask import jsonify
 from sqlalchemy.exc import IntegrityError
 import random
+
+from utils import generate_transaction_id
 
 DATABASE_URL = "sqlite:///flasklogin.sqlite"
 
@@ -78,7 +80,9 @@ class Notifications(AbstractModel):
     __tablename__ = "notifications"
     content = Column(String(255), nullable=False)
     user_id = Column(Integer, ForeignKey("user.id"))
-
+    transaction_amount = Column(Float, nullable=True)
+    transaction_type = Column(String(50), nullable=True)
+    transaction_id = Column(String(14), nullable=False, unique=True, default=generate_transaction_id)
 
 class Bank_Account(AbstractModel):
     __tablename__ = "bank_account"
@@ -126,12 +130,15 @@ class Bank_Account(AbstractModel):
             notification = Notifications(
                 content=f"- Amount {amount} and transferred to {to_user.username}.",
                 user_id=from_user_id,
+                transaction_amount=amount,
+                transaction_type='Withdrawal'
             )
             db.add(notification)
             to_account.add_balance(amount)
             notification = Notifications(
-                content=f"- Amount {amount} Deposited from {from_user.username}.",
+                content=f"+ Amount {amount} Deposited from {from_user.username}.",
                 user_id=to_user_id,
+                transaction_amount=amount, transaction_type='Deposit'
             )
             db.add(notification)
             db.commit()

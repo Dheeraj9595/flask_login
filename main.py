@@ -1,13 +1,15 @@
+import logging
 import os
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_bcrypt import Bcrypt  # Make sure to install flask-bcrypt
+from sqlalchemy.orm import aliased
 from werkzeug.utils import secure_filename
 
 from account import account_bp
 
-from db import SessionLocal, User, Bank_Account
+from db import SessionLocal, User, Bank_Account, Notifications
 from sqlalchemy.exc import IntegrityError
 from db import create
 from serializers import get_all_serializer, serialize_user, RegisterUserSerializer
@@ -24,6 +26,19 @@ from flask_mail import Mail, Message
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 db = SessionLocal()
+
+
+# Set up logging
+logging.basicConfig(
+    level=logging.DEBUG,  # Set the logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # Log message format
+    handlers=[
+        logging.StreamHandler(),  # Log to console
+        logging.FileHandler('app.log')  # Also log to a file named 'app.log'
+    ]
+)
+
+
 
 # Flask-Mail Configuration
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
@@ -81,32 +96,66 @@ def display_users():
 def login_html():
     return render_template('login2.html')
 
+#
+# @app.route('/transactions')
+# def transactions():
+#     query = db.query(
+#         Notifications.id,
+#         Notifications.content,
+#         Notifications.created_date,
+#         Notifications.transaction_type,
+#         Notifications.transaction_amount,
+#         User.first_name,  # Add first_name to the query
+#         User.last_name,  # You can also add last_name if needed
+#         User.username
+#     ).join(User, Notifications.user_id == User.id).order_by(Notifications.id.desc())
+#     no_of_transactions = db.query(Notifications).all()
+#
+#     # Execute the query
+#     result = query
+#
+#     # Render the template with the transactions and the total number of transactions
+#     return render_template('transactions.html', transactions=result, no_of_transactions=len(no_of_transactions))
+
 
 @app.route('/transactions')
 def transactions():
-    transactions = [
-        {
-            "type": "Salary Payment",
-            "name": "Jenny Wilson",
-            "date": "7 Nov, 11:03 AM",
-            "transaction_id": "#43756",
-            "amount": 536,
-            "status": "Completed",
-            "type_category": "Expenses"
-        },
-        {
-            "type": "Salary Payment",
-            "name": "Jenny Wilson",
-            "date": "7 Nov, 11:03 AM",
-            "transaction_id": "#43756",
-            "amount": 536,
-            "status": "Completed",
-            "type_category": "Expenses"
-        }
-        # Add more transactions...
-    ]
-    return render_template('transactions.html', transactions=transactions)
+    try:
+        # Query to fetch transaction details and associated user data
+        query = db.query(
+            Notifications.id,
+            Notifications.content,
+            Notifications.created_date,
+            Notifications.transaction_type,
+            Notifications.transaction_amount,
+            Notifications.transaction_id,
+            User.first_name,  # Add first_name to the query
+            User.last_name,  # Add last_name if needed
+            User.username
+        ).join(User, Notifications.user_id == User.id).order_by(Notifications.id.desc())
 
+        # Get total number of transactions
+        no_of_transactions = db.query(Notifications).all()
+
+        # Execute the query and fetch results
+        result = query.all()
+
+        # Handle case where no results are found
+        if not result:
+            logging.warning("No transactions found.")
+            return render_template('transactions.html', transactions=[], no_of_transactions=0)
+
+        app.logger.info("transaction query is executed")
+
+        # Render the template with the transactions and the total number of transactions
+        return render_template('transactions.html', transactions=result, no_of_transactions=len(no_of_transactions))
+
+    except Exception as e:
+        # Log the exception error
+        logging.error(f"Error occurred while fetching transactions: {str(e)}")
+
+        # Optionally, send a user-friendly error message or return a 500 error page
+        return jsonify({'error': 'An error occurred while processing your request. Please try again later.'}), 500
 
 
 @app.route("/send-email", methods=["POST"])

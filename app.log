@@ -1,0 +1,177 @@
+2024-12-03 16:37:23,480 - werkzeug - WARNING -  * Debugger is active!
+2024-12-03 16:37:23,480 - werkzeug - INFO -  * Debugger PIN: 493-717-951
+2024-12-03 16:38:17,805 - werkzeug - INFO -  * Detected change in '/home/ubox48/PycharmProjects/flask_login/main.py', reloading
+2024-12-03 16:38:19,090 - werkzeug - WARNING -  * Debugger is active!
+2024-12-03 16:38:19,091 - werkzeug - INFO -  * Debugger PIN: 493-717-951
+2024-12-03 16:38:26,212 - werkzeug - INFO -  * Detected change in '/home/ubox48/PycharmProjects/flask_login/main.py', reloading
+2024-12-03 16:38:27,472 - werkzeug - WARNING -  * Debugger is active!
+2024-12-03 16:38:27,472 - werkzeug - INFO -  * Debugger PIN: 493-717-951
+2024-12-03 16:38:36,020 - main - INFO - query is executed
+2024-12-03 16:38:36,028 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 16:38:36] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 16:38:47,931 - werkzeug - INFO -  * Detected change in '/home/ubox48/PycharmProjects/flask_login/main.py', reloading
+2024-12-03 16:38:49,079 - werkzeug - WARNING -  * Debugger is active!
+2024-12-03 16:38:49,079 - werkzeug - INFO -  * Debugger PIN: 493-717-951
+2024-12-03 16:38:49,815 - main - INFO - transaction query is executed
+2024-12-03 16:38:49,822 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 16:38:49] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 16:42:37,110 - werkzeug - INFO -  * Detected change in '/home/ubox48/PycharmProjects/flask_login/db.py', reloading
+2024-12-03 16:43:39,034 - werkzeug - WARNING -  * Debugger is active!
+2024-12-03 16:43:39,034 - werkzeug - INFO -  * Debugger PIN: 493-717-951
+2024-12-03 16:46:29,174 - werkzeug - INFO -  * Detected change in '/home/ubox48/PycharmProjects/flask_login/alembic/versions/d9ed12bbddbd_transaction_id_added_in_notification_.py', reloading
+2024-12-03 16:46:30,291 - werkzeug - WARNING -  * Debugger is active!
+2024-12-03 16:46:30,291 - werkzeug - INFO -  * Debugger PIN: 493-717-951
+2024-12-03 16:46:47,632 - werkzeug - INFO -  * Detected change in '/home/ubox48/PycharmProjects/flask_login/alembic/versions/d9ed12bbddbd_transaction_id_added_in_notification_.py', reloading
+2024-12-03 16:46:48,776 - werkzeug - WARNING -  * Debugger is active!
+2024-12-03 16:46:48,777 - werkzeug - INFO -  * Debugger PIN: 493-717-951
+2024-12-03 16:47:38,268 - werkzeug - INFO -  * Detected change in '/home/ubox48/PycharmProjects/flask_login/alembic/versions/d9ed12bbddbd_transaction_id_added_in_notification_.py', reloading
+2024-12-03 16:47:40,522 - werkzeug - WARNING -  * Debugger is active!
+2024-12-03 16:47:40,523 - werkzeug - INFO -  * Debugger PIN: 493-717-951
+2024-12-03 16:48:48,313 - werkzeug - INFO -  * Detected change in '/home/ubox48/PycharmProjects/flask_login/alembic/versions/d9ed12bbddbd_transaction_id_added_in_notification_.py', reloading
+2024-12-03 16:48:49,434 - werkzeug - WARNING -  * Debugger is active!
+2024-12-03 16:48:49,434 - werkzeug - INFO -  * Debugger PIN: 493-717-951
+2024-12-03 16:58:11,343 - werkzeug - INFO -  * Detected change in '/home/ubox48/PycharmProjects/flask_login/db.py', reloading
+2024-12-03 16:58:12,468 - werkzeug - WARNING -  * Debugger is active!
+2024-12-03 16:58:12,469 - werkzeug - INFO -  * Debugger PIN: 493-717-951
+2024-12-03 16:58:13,496 - werkzeug - INFO -  * Detected change in '/home/ubox48/PycharmProjects/flask_login/db.py', reloading
+2024-12-03 16:58:14,746 - werkzeug - WARNING -  * Debugger is active!
+2024-12-03 16:58:14,747 - werkzeug - INFO -  * Debugger PIN: 493-717-951
+2024-12-03 16:58:22,335 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 16:58:22] "GET /allnotifications HTTP/1.1" 200 -
+2024-12-03 16:58:29,046 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 16:58:29] "POST /transfer-balance HTTP/1.1" 200 -
+2024-12-03 16:58:32,331 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 16:58:32] "GET /allnotifications HTTP/1.1" 200 -
+2024-12-03 16:59:29,536 - werkzeug - INFO -  * Detected change in '/home/ubox48/PycharmProjects/flask_login/account.py', reloading
+2024-12-03 16:59:30,682 - werkzeug - WARNING -  * Debugger is active!
+2024-12-03 16:59:30,683 - werkzeug - INFO -  * Debugger PIN: 493-717-951
+2024-12-03 16:59:32,609 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 16:59:32] "GET /allnotifications HTTP/1.1" 200 -
+2024-12-03 17:00:14,696 - werkzeug - INFO -  * Detected change in '/home/ubox48/PycharmProjects/flask_login/main.py', reloading
+2024-12-03 17:00:15,805 - werkzeug - WARNING -  * Debugger is active!
+2024-12-03 17:00:15,805 - werkzeug - INFO -  * Debugger PIN: 493-717-951
+2024-12-03 17:00:18,405 - main - INFO - transaction query is executed
+2024-12-03 17:00:18,412 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:00:18] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 17:03:09,376 - main - INFO - transaction query is executed
+2024-12-03 17:03:09,378 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:03:09] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 17:04:48,620 - werkzeug - INFO -  * Detected change in '/home/ubox48/PycharmProjects/flask_login/db.py', reloading
+2024-12-03 17:04:49,727 - werkzeug - WARNING -  * Debugger is active!
+2024-12-03 17:04:49,728 - werkzeug - INFO -  * Debugger PIN: 493-717-951
+2024-12-03 17:05:25,799 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:05:25] "POST /transfer-balance HTTP/1.1" 200 -
+2024-12-03 17:05:28,585 - main - INFO - transaction query is executed
+2024-12-03 17:05:28,592 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:05:28] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 17:06:04,156 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:06:04] "GET /all/ HTTP/1.1" 200 -
+2024-12-03 17:06:34,928 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:06:34] "PATCH /update-user/1 HTTP/1.1" 200 -
+2024-12-03 17:06:37,659 - main - INFO - transaction query is executed
+2024-12-03 17:06:37,660 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:06:37] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 17:06:40,764 - main - INFO - transaction query is executed
+2024-12-03 17:06:40,769 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:06:40] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 17:07:05,024 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:07:05] "GET /all/ HTTP/1.1" 200 -
+2024-12-03 17:07:41,718 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:07:41] "PATCH /update-user/1 HTTP/1.1" 200 -
+2024-12-03 17:07:43,461 - main - INFO - transaction query is executed
+2024-12-03 17:07:43,463 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:07:43] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 17:07:53,422 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:07:53] "PATCH /update-user/1 HTTP/1.1" 200 -
+2024-12-03 17:07:54,707 - main - INFO - transaction query is executed
+2024-12-03 17:07:54,710 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:07:54] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 17:08:09,657 - main - INFO - transaction query is executed
+2024-12-03 17:08:09,659 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:08:09] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 17:08:17,763 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:08:17] "GET /all/ HTTP/1.1" 200 -
+2024-12-03 17:10:07,020 - main - INFO - transaction query is executed
+2024-12-03 17:10:07,022 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:10:07] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 17:10:07,140 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:10:07] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2024-12-03 17:10:07,596 - main - INFO - transaction query is executed
+2024-12-03 17:10:07,598 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:10:07] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 17:10:07,669 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:10:07] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2024-12-03 17:10:07,840 - main - INFO - transaction query is executed
+2024-12-03 17:10:07,842 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:10:07] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 17:10:07,913 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:10:07] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2024-12-03 17:10:16,824 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:10:16] "POST /transfer-balance HTTP/1.1" 200 -
+2024-12-03 17:10:19,550 - main - INFO - transaction query is executed
+2024-12-03 17:10:19,552 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:10:19] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 17:10:19,663 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:10:19] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2024-12-03 17:10:20,335 - main - INFO - transaction query is executed
+2024-12-03 17:10:20,337 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:10:20] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 17:10:20,409 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 17:10:20] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2024-12-03 18:23:17,733 - main - INFO - transaction query is executed
+2024-12-03 18:23:17,735 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:23:17] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 18:23:23,187 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:23:23] "[33mGET /home HTTP/1.1[0m" 404 -
+2024-12-03 18:23:26,764 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:23:26] "GET / HTTP/1.1" 200 -
+2024-12-03 18:23:26,801 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:23:26] "[36mGET /static/css/owl.carousel.min.css HTTP/1.1[0m" 304 -
+2024-12-03 18:23:26,802 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:23:26] "[36mGET /static/fonts/icomoon/style.css HTTP/1.1[0m" 304 -
+2024-12-03 18:23:26,802 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:23:26] "[36mGET /static/css/bootstrap.min.css HTTP/1.1[0m" 304 -
+2024-12-03 18:23:26,816 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:23:26] "[36mGET /static/js/popper.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:23:26,818 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:23:26] "[36mGET /static/js/jquery-3.3.1.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:23:26,818 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:23:26] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-03 18:23:26,825 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:23:26] "[36mGET /static/js/bootstrap.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:23:26,825 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:23:26] "[36mGET /static/js/jquery.sticky.js HTTP/1.1[0m" 304 -
+2024-12-03 18:23:26,830 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:23:26] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2024-12-03 18:23:26,848 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:23:26] "[36mGET /static/images/hero_1.jpg HTTP/1.1[0m" 304 -
+2024-12-03 18:23:26,874 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:23:26] "[36mGET /static/fonts/icomoon/fonts/icomoon.ttf?10si43 HTTP/1.1[0m" 304 -
+2024-12-03 18:23:32,972 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:23:32] "[33mGET /blog.html HTTP/1.1[0m" 404 -
+2024-12-03 18:24:45,408 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "GET / HTTP/1.1" 200 -
+2024-12-03 18:24:45,435 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/fonts/icomoon/style.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,435 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/css/owl.carousel.min.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,436 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/css/bootstrap.min.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,438 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,442 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/js/bootstrap.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,439 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/js/popper.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,444 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/js/jquery-3.3.1.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,451 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/js/jquery.sticky.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,451 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,491 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/images/hero_1.jpg HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,492 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/fonts/icomoon/fonts/icomoon.ttf?10si43 HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,767 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "GET / HTTP/1.1" 200 -
+2024-12-03 18:24:45,800 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/fonts/icomoon/style.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,804 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/css/owl.carousel.min.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,808 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/css/bootstrap.min.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,811 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,821 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/js/jquery-3.3.1.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,825 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/js/popper.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,825 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/js/bootstrap.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,834 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,828 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/js/jquery.sticky.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:45,853 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:45] "[36mGET /static/images/hero_1.jpg HTTP/1.1[0m" 304 -
+2024-12-03 18:24:47,949 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:47] "GET / HTTP/1.1" 200 -
+2024-12-03 18:24:47,963 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:47] "[36mGET /static/fonts/icomoon/style.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:47,970 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:47] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:47,975 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:47] "[36mGET /static/css/bootstrap.min.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:47,977 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:47] "[36mGET /static/css/owl.carousel.min.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:47,978 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:47] "[36mGET /static/js/popper.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:47,979 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:47] "[36mGET /static/js/jquery-3.3.1.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:47,980 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:47] "[36mGET /static/js/bootstrap.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:47,986 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:47] "[36mGET /static/js/jquery.sticky.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:47,987 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:47] "[36mGET /static/images/hero_1.jpg HTTP/1.1[0m" 304 -
+2024-12-03 18:24:47,988 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:47] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:49,462 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:49] "GET / HTTP/1.1" 200 -
+2024-12-03 18:24:49,481 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:49] "[36mGET /static/css/owl.carousel.min.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:49,481 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:49] "[36mGET /static/fonts/icomoon/style.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:49,485 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:49] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:49,488 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:49] "[36mGET /static/css/bootstrap.min.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:49,494 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:49] "[36mGET /static/js/jquery-3.3.1.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:49,494 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:49] "[36mGET /static/js/popper.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:49,497 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:49] "[36mGET /static/js/jquery.sticky.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:49,495 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:49] "[36mGET /static/js/bootstrap.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:49,499 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:49] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:49,505 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:49] "[36mGET /static/images/hero_1.jpg HTTP/1.1[0m" 304 -
+2024-12-03 18:24:51,001 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:51] "GET / HTTP/1.1" 200 -
+2024-12-03 18:24:51,021 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:51] "GET /static/fonts/icomoon/style.css HTTP/1.1" 200 -
+2024-12-03 18:24:51,024 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:51] "GET /static/css/style.css HTTP/1.1" 200 -
+2024-12-03 18:24:51,024 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:51] "GET /static/css/owl.carousel.min.css HTTP/1.1" 200 -
+2024-12-03 18:24:51,024 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:51] "GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 200 -
+2024-12-03 18:24:51,024 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:51] "GET /static/css/bootstrap.min.css HTTP/1.1" 200 -
+2024-12-03 18:24:51,026 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:51] "GET /static/js/popper.min.js HTTP/1.1" 200 -
+2024-12-03 18:24:51,035 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:51] "GET /static/js/jquery.sticky.js HTTP/1.1" 200 -
+2024-12-03 18:24:51,035 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:51] "GET /static/js/bootstrap.min.js HTTP/1.1" 200 -
+2024-12-03 18:24:51,045 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:51] "GET /static/js/main.js HTTP/1.1" 200 -
+2024-12-03 18:24:51,117 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:51] "GET /static/fonts/icomoon/fonts/icomoon.ttf?10si43 HTTP/1.1" 200 -
+2024-12-03 18:24:51,117 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:51] "GET /static/images/hero_1.jpg HTTP/1.1" 200 -
+2024-12-03 18:24:51,171 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:51] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2024-12-03 18:24:52,535 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:52] "GET / HTTP/1.1" 200 -
+2024-12-03 18:24:52,559 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:52] "[36mGET /static/css/bootstrap.min.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:52,560 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:52] "[36mGET /static/css/owl.carousel.min.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:52,562 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:52] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:52,563 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:52] "[36mGET /static/fonts/icomoon/style.css HTTP/1.1[0m" 304 -
+2024-12-03 18:24:52,566 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:52] "[36mGET /static/js/jquery-3.3.1.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:52,567 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:52] "[36mGET /static/js/popper.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:52,569 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:52] "[36mGET /static/js/bootstrap.min.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:52,579 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:52] "[36mGET /static/js/jquery.sticky.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:52,580 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:52] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2024-12-03 18:24:52,583 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:52] "[36mGET /static/images/hero_1.jpg HTTP/1.1[0m" 304 -
+2024-12-03 18:24:53,550 - main - INFO - transaction query is executed
+2024-12-03 18:24:53,553 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:24:53] "GET /transactions HTTP/1.1" 200 -
+2024-12-03 18:25:00,674 - main - INFO - transaction query is executed
+2024-12-03 18:25:00,676 - werkzeug - INFO - 127.0.0.1 - - [03/Dec/2024 18:25:00] "GET /transactions HTTP/1.1" 200 -

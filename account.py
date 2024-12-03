@@ -2,6 +2,7 @@ import os
 import requests
 
 from flask import request, jsonify, Blueprint
+from sqlalchemy import desc
 from starlette import requests
 
 from db import User, SessionLocal, Bank_Account, Notifications
@@ -63,7 +64,7 @@ def deposit():
         # Update the balance
         bank_acc.add_balance(balance_to_add)
         notification = Notifications(
-            content=f"+ Deposited {balance_to_add}.", user_id=user_id
+            content=f"+ Deposited {balance_to_add}.", user_id=user_id, transaction_amount=balance_to_add, transaction_type='Deposit'
         )
         db.add(notification)
         db.commit()
@@ -124,7 +125,7 @@ def withdrawal():
         bank_account.withdrawal(amount)
 
         # Create a notification
-        notification = Notifications(content=f"- Withdrew {amount}.", user_id=user_id)
+        notification = Notifications(content=f"- Withdrew {amount}.", user_id=user_id, transaction_amount=amount, transaction_type='Withdrawal')
         db.add(notification)
 
         # Commit changes
@@ -517,8 +518,8 @@ def update_user(user_id: int):
 @account_bp.route('/allnotifications', methods=['GET'])
 def all_notifications():
     try:
-        all_notifications = db.query(Notifications).all()
-        seri = [{"id": user.id,"user id": user.user_id, "message": user.content} for user in all_notifications]
+        all_notifications = db.query(Notifications).order_by(desc(Notifications.id)).all()
+        seri = [{"id": user.id,"user id": user.user_id, "message": user.content, "transaction_amount": user.transaction_amount, "transaction_type": user.transaction_type, "transaction id": user.transaction_id} for user in all_notifications]
         return jsonify(seri)
     except Exception as e:
         return jsonify({"message": f"Error is : {str(e)}"})

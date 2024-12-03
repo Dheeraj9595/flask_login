@@ -67,7 +67,7 @@
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-2 sidebar">
-                <h4 class="text-center">Neowise</h4>
+                <h4 class="text-center">Bank statement</h4>
                 <nav>
                     <a href="#">Dashboard</a>
                     <a href="#">Performance</a>
@@ -86,8 +86,8 @@
                 <div class="row my-4">
                     <div class="col-md-3">
                         <div class="summary-card">
-                            <h3>703</h3>
-                            <p>Salary Payments</p>
+                            <h3>{{no_of_transactions}}</h3>
+                            <p>No of Transactions</p>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -114,8 +114,8 @@
                 <h4>Transaction History</h4>
                 <table class="table table-bordered mt-3">
                     <thead>
-                        <tr>
-                            <th>Transaction Type</th>
+                        <tr><th>id</th>
+                            <th>Summary</th>
                             <th>Name</th>
                             <th>Date</th>
                             <th>Transaction ID</th>
@@ -125,34 +125,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Salary Payment</td>
-                            <td>Jenny Wilson</td>
-                            <td>7 Nov, 11:03 AM</td>
-                            <td>#43756</td>
-                            <td>$536</td>
-                            <td class="status-completed">Completed</td>
-                            <td>Expenses</td>
-                        </tr>
-                        <tr>
-                            <td>Client Payment</td>
-                            <td>Juan Attwood</td>
-                            <td>7 Nov, 11:03 AM</td>
-                            <td>#43757</td>
-                            <td>$647</td>
-                            <td class="status-completed">Completed</td>
-                            <td>Income</td>
-                        </tr>
-                        <tr>
-                            <td>Investment</td>
-                            <td>Arnold Aldridge</td>
-                            <td>6 Nov, 10:33 AM</td>
-                            <td>#43178</td>
-                            <td>$703</td>
-                            <td class="status-progress">In Progress</td>
-                            <td>Expenses</td>
-                        </tr>
-                    </tbody>
+                    {% for trans in transactions %}
+                    <tr>
+                        <td>{{ trans.id }}</td>
+                        <td>{{ trans.content }}</td>
+                        <td>{{ trans.first_name }}</td>
+                        <td>{{ trans.created_date }}</td>
+                        <td>{{ trans.transaction_id}}</td>
+                        <td>{{ trans.transaction_amount }}</td>
+                        <td class="status-completed">Completed</td>
+                        <td>{{ trans.transaction_type }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
                 </table>
             </div>
         </div>
